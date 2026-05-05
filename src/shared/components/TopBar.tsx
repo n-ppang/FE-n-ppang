@@ -6,7 +6,7 @@ const TopBar = () => {
       <div className="absolute top-0 flex h-10 w-full items-center justify-center bg-gray-400">
         <div className="flex w-full flex-row items-center justify-between px-10">
           <Link className="text-lg font-bold" to="/">
-            HongikShop
+            프로젝트 제목
           </Link>
           <div className="flex flex-row gap-10">
             <Link to="/login">Login</Link>

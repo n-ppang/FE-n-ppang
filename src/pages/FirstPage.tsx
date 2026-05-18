@@ -11,7 +11,7 @@ const FirstPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 pb-24 font-sans text-gray-900">
       {/* Header / Tabs */}
-      <div className="sticky top-0 z-10 border-b border-gray-100 bg-white/80 backdrop-blur-md">
+      <div className="sticky top-16 z-10 border-b border-gray-100 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-md px-4 pt-4">
           <button
             onClick={() => setActiveTab('group-purchase')}

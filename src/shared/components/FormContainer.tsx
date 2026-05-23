@@ -30,158 +30,165 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
     setFormData({ ...formData, imageUrls: newImageUrls });
   };
 
+  const inputClasses = "w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 placeholder:text-gray-400";
+  const labelClasses = "mb-1.5 ml-1 block text-sm font-bold text-gray-700";
+
   // Backwards compatibility for ModifyForm or other generic usages
   if (!type) {
     return (
-      <form className="flex flex-col gap-4 bg-gray-100 p-6 rounded-lg">
-        <div className="flex flex-col">
-          <label>제품명</label>
+      <div className="space-y-4">
+        <div>
+          <label className={labelClasses}>제품명</label>
           <input
             name="name"
             value={formData.name || ''}
             onChange={handleChange}
             type="text"
-            className="border p-2"
+            className={inputClasses}
           />
         </div>
-        <div className="flex flex-col">
-          <label>제품 설명</label>
+        <div>
+          <label className={labelClasses}>제품 설명</label>
           <textarea
             name="description"
             value={formData.description || ''}
             onChange={handleChange}
-            className="border p-2"
+            rows={4}
+            className={inputClasses}
           />
         </div>
-        <div className="flex flex-col">
-          <label>가격</label>
+        <div>
+          <label className={labelClasses}>가격</label>
           <input
             name="price"
             value={formData.price || 0}
             onChange={handleChange}
             type="number"
-            className="border p-2"
+            className={inputClasses}
           />
         </div>
-        <div className="flex flex-col">
-          <label>이미지 URL</label>
+        <div>
+          <label className={labelClasses}>이미지 URL</label>
           <input
             name="image_url"
             value={formData.image_url || ''}
             onChange={handleChange}
             type="text"
-            className="border p-2"
+            className={inputClasses}
           />
         </div>
-      </form>
+      </div>
     );
   }
 
   return (
-    <form className="flex flex-col gap-4 bg-gray-50 p-6 rounded-lg shadow-sm">
-      <div className="flex flex-col gap-1">
-        <label className="font-semibold text-gray-700">제목</label>
+    <div className="space-y-6">
+      <div>
+        <label className={labelClasses}>제목</label>
         <input
           name="title"
           value={formData.title}
           onChange={handleChange}
           type="text"
           placeholder="제목을 입력하세요"
-          className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className={inputClasses}
         />
       </div>
 
-      <div className="flex flex-col gap-1">
-        <label className="font-semibold text-gray-700">내용</label>
+      <div>
+        <label className={labelClasses}>내용</label>
         <textarea
           name="content"
           value={formData.content}
           onChange={handleChange}
-          placeholder="내용을 입력하세요"
-          className="border p-2 rounded h-32 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="상세 내용을 입력하세요"
+          rows={5}
+          className={inputClasses}
         />
       </div>
 
       {type === 'GROUP_PURCHASE' && (
-        <>
-          <div className="flex flex-col gap-1">
-            <label className="font-semibold text-gray-700">총 인원수</label>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className={labelClasses}>총 인원수</label>
             <input
               name="totalPeople"
               value={(formData as GroupPurchaseCreateRequest).totalPeople}
               onChange={handleChange}
               type="number"
-              placeholder="총 인원수"
-              className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="명"
+              className={inputClasses}
             />
           </div>
-          <div className="flex flex-col gap-1">
-            <label className="font-semibold text-gray-700">총 금액 (나누기 전)</label>
+          <div>
+            <label className={labelClasses}>총 금액</label>
             <input
               name="totalAmount"
               value={(formData as GroupPurchaseCreateRequest).totalAmount}
               onChange={handleChange}
               type="number"
-              placeholder="총 금액"
-              className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="원"
+              className={inputClasses}
             />
           </div>
-          <div className="flex flex-col gap-1">
-            <label className="font-semibold text-gray-700">오픈채팅방 링크</label>
+          <div className="col-span-2">
+            <label className={labelClasses}>오픈채팅방 링크</label>
             <input
               name="openChatLink"
               value={(formData as GroupPurchaseCreateRequest).openChatLink}
               onChange={handleChange}
               type="text"
               placeholder="https://open.kakao.com/..."
-              className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className={inputClasses}
             />
           </div>
-        </>
+        </div>
       )}
 
       {type === 'PRODUCT_SHARING' && (
-        <div className="flex flex-col gap-1">
-          <label className="font-semibold text-gray-700">유통기한</label>
+        <div>
+          <label className={labelClasses}>유통기한</label>
           <input
             name="expirationDate"
             value={(formData as ProductSharingCreateRequest).expirationDate}
             onChange={handleChange}
             type="date"
-            className="border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className={inputClasses}
           />
         </div>
       )}
 
-      <div className="flex flex-col gap-2">
-        <label className="font-semibold text-gray-700">사진 (URL)</label>
-        {(formData.imageUrls || []).map((url: string, index: number) => (
-          <div key={index} className="flex gap-2">
-            <input
-              value={url}
-              onChange={(e) => handleImageUrlChange(index, e.target.value)}
-              type="text"
-              placeholder={`이미지 URL #${index + 1}`}
-              className="flex-1 border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-            <button
-              type="button"
-              onClick={() => removeImageUrlField(index)}
-              className="bg-red-400 text-white px-3 rounded hover:bg-red-500"
-            >
-              삭제
-            </button>
-          </div>
-        ))}
-        <button
-          type="button"
-          onClick={addImageUrlField}
-          className="bg-gray-200 text-gray-700 p-2 rounded hover:bg-gray-300 transition-colors"
-        >
-          + 사진 추가하기
-        </button>
+      <div>
+        <label className={labelClasses}>사진 (URL)</label>
+        <div className="space-y-3">
+          {(formData.imageUrls || []).map((url: string, index: number) => (
+            <div key={index} className="flex gap-2">
+              <input
+                value={url}
+                onChange={(e) => handleImageUrlChange(index, e.target.value)}
+                type="text"
+                placeholder={`이미지 URL #${index + 1}`}
+                className={inputClasses}
+              />
+              <button
+                type="button"
+                onClick={() => removeImageUrlField(index)}
+                className="flex items-center justify-center rounded-xl bg-red-50 px-4 text-sm font-bold text-red-500 transition-colors hover:bg-red-100 active:scale-95"
+              >
+                삭제
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addImageUrlField}
+            className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-200 py-3 text-sm font-bold text-gray-500 transition-all hover:border-blue-300 hover:text-blue-500 active:scale-[0.98]"
+          >
+            <span className="text-lg">+</span> 사진 추가하기
+          </button>
+        </div>
       </div>
-    </form>
+    </div>
   );
 };
 

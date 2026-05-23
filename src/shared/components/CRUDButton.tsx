@@ -10,9 +10,13 @@ const CRUDButton = ({ onClick, text, className }: CRUDButtonProps) => {
   return (
     <button
       onClick={onClick}
-      className={twMerge(`cursor-pointer rounded-2xl bg-gray-300 p-2 ${className}`)}
+      className={twMerge(
+        "flex items-center gap-2 rounded-2xl bg-blue-600 px-6 py-4 font-black text-white shadow-xl shadow-blue-200 transition-all hover:bg-blue-700 hover:shadow-blue-300 active:scale-95",
+        className
+      )}
     >
-      {text}
+      <span className="text-xl">+</span>
+      <span>{text}</span>
     </button>
   );
 };

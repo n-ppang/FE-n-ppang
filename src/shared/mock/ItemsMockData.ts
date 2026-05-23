@@ -38,7 +38,7 @@ export const SharingItemsMockData = [
     id: 'ps-2',
     title: '음료수 나눔해요',
     content: '탄산음료 박스로 샀는데 질려서 나눔해요.',
-    expirationDate: '2026-5-31',
+    expirationDate: '2026-05-31',
     createdAt: '2023-01-01',
     imageUrls: ['https://placehold.co/600x400/f8fafc/64748b?text=Drink'],
   },

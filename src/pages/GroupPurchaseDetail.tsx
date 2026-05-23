@@ -1,14 +1,31 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { GroupPurchaseItemsMockData } from '@/shared/mock/ItemsMockData';
+import { GroupPurchaseCommentsMockData, type Comment } from '@/shared/mock/CommentMockData';
+import CommentSection from '@/shared/components/CommentSection';
+import { useState } from 'react';
 
 const GroupPurchaseDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const item = GroupPurchaseItemsMockData.find((i) => i.id === id);
+  const [comments, setComments] = useState<Comment[]>(
+    id ? GroupPurchaseCommentsMockData[id] || [] : []
+  );
 
   if (!item) {
     return <div className="p-10 text-center">상품을 찾을 수 없습니다.</div>;
   }
+
+  const handleAddComment = (content: string, mention?: string) => {
+    const newComment: Comment = {
+      id: Date.now().toString(),
+      author: '나 (User)',
+      content,
+      mention,
+      createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+    };
+    setComments([...comments, newComment]);
+  };
 
   return (
     <div className="min-h-screen bg-white pb-24">
@@ -64,13 +81,16 @@ const GroupPurchaseDetail = () => {
             </div>
           </div>
 
-          <div className="space-y-4 border-t border-gray-100 pt-8">
+          <div className="space-y-4 border-t border-gray-100 pt-8 pb-10">
             <h2 className="text-lg font-bold text-gray-900">상세 설명</h2>
             <p className="whitespace-pre-wrap text-base leading-relaxed text-gray-600">
               {item.content}
             </p>
           </div>
         </div>
+
+        {/* Comment Section */}
+        <CommentSection comments={comments} onAddComment={handleAddComment} />
       </div>
 
       {/* Fixed Bottom Button */}

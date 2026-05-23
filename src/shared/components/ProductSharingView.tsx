@@ -7,6 +7,7 @@ const ProductSharingView = () => {
       {SharingItemsMockData.map((item, index) => (
         <ItemContainer
           key={index}
+          id={item.id}
           model="product-sharing"
           title={item.title}
           expirationDate={item.expirationDate}

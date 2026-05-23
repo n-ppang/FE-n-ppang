@@ -1,4 +1,7 @@
+import { useNavigate } from 'react-router-dom';
+
 interface ItemContainerProps {
+  id: string;
   model: 'group-purchase' | 'product-sharing';
   title: string;
   price?: number;
@@ -9,6 +12,7 @@ interface ItemContainerProps {
 }
 
 const ItemContainer = ({
+  id,
   model,
   title,
   price,
@@ -17,14 +21,26 @@ const ItemContainer = ({
   expirationDate,
   createdAt,
 }: ItemContainerProps) => {
+  const navigate = useNavigate();
   const daysLeft = expirationDate
     ? Math.ceil((new Date(expirationDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
     : undefined;
 
   const isExpiringSoon = daysLeft !== undefined && daysLeft <= 3;
 
+  const handleClick = () => {
+    if (model === 'group-purchase') {
+      navigate(`/group-purchases/${id}`);
+    } else {
+      navigate(`/sharing-products/${id}`);
+    }
+  };
+
   return (
-    <div className="flex w-full overflow-hidden rounded-2xl bg-white shadow-[0_2px_10px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] ring-1 ring-gray-100 transition-all hover:scale-[1.01] hover:shadow-lg active:scale-[0.99]">
+    <div 
+      onClick={handleClick}
+      className="mb-4 flex w-full cursor-pointer overflow-hidden rounded-2xl bg-white shadow-[0_2px_10px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] ring-1 ring-gray-100 transition-all hover:scale-[1.01] hover:shadow-lg active:scale-[0.99]"
+    >
       {/* Image Section */}
       <div className="relative h-28 w-28 flex-shrink-0 bg-gray-50 sm:h-32 sm:w-32">
         <img

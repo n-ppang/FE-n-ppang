@@ -6,7 +6,7 @@ interface ItemContainerProps {
   title: string;
   price?: number;
   peopleClosed?: number;
-  peopleNum?: number;
+  totalPeople?: number;
   expirationDate?: string;
   createdAt: string;
 }
@@ -17,7 +17,7 @@ const ItemContainer = ({
   title,
   price,
   peopleClosed,
-  peopleNum,
+  totalPeople,
   expirationDate,
   createdAt,
 }: ItemContainerProps) => {
@@ -72,11 +72,11 @@ const ItemContainer = ({
               <div className="flex items-center gap-2 text-[11px] text-gray-400 sm:text-xs">
                 <span className="font-semibold text-gray-600">{peopleClosed}</span>
                 <span>/</span>
-                <span>{peopleNum}명 모집</span>
+                <span>{totalPeople}명 모집</span>
                 <div className="ml-auto h-1.5 w-12 overflow-hidden rounded-full bg-gray-100 sm:w-16">
                   <div 
                     className="h-full bg-blue-500 transition-all duration-500" 
-                    style={{ width: `${Math.min(100, ((peopleClosed || 0) / (peopleNum || 1)) * 100)}%` }}
+                    style={{ width: `${Math.min(100, ((peopleClosed || 0) / (totalPeople || 1)) * 100)}%` }}
                   />
                 </div>
               </div>

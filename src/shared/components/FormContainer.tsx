@@ -114,7 +114,7 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
             <label className={labelClasses}>총 인원수</label>
             <input
               name="totalPeople"
-              value={(formData as GroupPurchaseCreateRequest).totalPeople}
+              value={formData.totalPeople || 0}
               onChange={handleChange}
               type="number"
               placeholder="명"
@@ -125,7 +125,7 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
             <label className={labelClasses}>총 금액</label>
             <input
               name="totalAmount"
-              value={(formData as GroupPurchaseCreateRequest).totalAmount}
+              value={formData.totalAmount || 0}
               onChange={handleChange}
               type="number"
               placeholder="원"
@@ -136,7 +136,7 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
             <label className={labelClasses}>오픈채팅방 링크</label>
             <input
               name="openChatLink"
-              value={(formData as GroupPurchaseCreateRequest).openChatLink}
+              value={formData.openChatLink || ''}
               onChange={handleChange}
               type="text"
               placeholder="https://open.kakao.com/..."
@@ -151,7 +151,7 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
           <label className={labelClasses}>유통기한</label>
           <input
             name="expirationDate"
-            value={(formData as ProductSharingCreateRequest).expirationDate}
+            value={formData.expirationDate || ''}
             onChange={handleChange}
             type="date"
             className={inputClasses}

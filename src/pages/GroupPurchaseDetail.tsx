@@ -43,7 +43,12 @@ const GroupPurchaseDetail = () => {
           </svg>
         </button>
         <span className="font-bold text-gray-900">공동구매 상세</span>
-        <div className="w-8" /> {/* Spacer */}
+        <button 
+          onClick={() => navigate(`/group-purchases/${id}/edit`)}
+          className="text-sm font-bold text-blue-600 transition-colors hover:text-blue-700"
+        >
+          수정
+        </button>
       </div>
 
       <div className="mx-auto max-w-md">
@@ -77,12 +82,12 @@ const GroupPurchaseDetail = () => {
           <div className="mb-8">
             <div className="mb-2 flex items-center justify-between text-sm font-bold">
               <span className="text-gray-900">모집 현황</span>
-              <span className="text-blue-600">{item.peopleClosed} / {item.peopleNum}명</span>
+              <span className="text-blue-600">{item.peopleClosed} / {item.totalPeople}명</span>
             </div>
             <div className="h-3 w-full overflow-hidden rounded-full bg-gray-100">
               <div 
                 className="h-full bg-blue-600 transition-all duration-1000" 
-                style={{ width: `${(item.peopleClosed / item.peopleNum) * 100}%` }}
+                style={{ width: `${(item.peopleClosed / item.totalPeople) * 100}%` }}
               />
             </div>
           </div>

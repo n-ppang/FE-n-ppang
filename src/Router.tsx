@@ -5,6 +5,7 @@ import ProductSharingCreate from './pages/ProductSharingCreate';
 import GroupPurchaseCreate from './pages/GroupPurchaseCreate';
 import GroupPurchaseDetail from './pages/GroupPurchaseDetail';
 import ProductSharingDetail from './pages/ProductSharingDetail';
+import ProductEdit from './pages/ProductEdit';
 
 const Router = () => {
   return (
@@ -13,8 +14,12 @@ const Router = () => {
       <Route path="/" element={<FirstPage />} />
       <Route path="/sharing-products/new" element={<ProductSharingCreate />} />
       <Route path="/group-purchases/new" element={<GroupPurchaseCreate />} />
+      
       <Route path="/group-purchases/:id" element={<GroupPurchaseDetail />} />
       <Route path="/sharing-products/:id" element={<ProductSharingDetail />} />
+
+      <Route path="/group-purchases/:id/edit" element={<ProductEdit type="GROUP_PURCHASE" />} />
+      <Route path="/sharing-products/:id/edit" element={<ProductEdit type="PRODUCT_SHARING" />} />
     </Routes>
   );
 };

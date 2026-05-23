@@ -47,7 +47,12 @@ const ProductSharingDetail = () => {
           </svg>
         </button>
         <span className="font-bold text-gray-900">나눔 상세</span>
-        <div className="w-8" /> {/* Spacer */}
+        <button 
+          onClick={() => navigate(`/sharing-products/${id}/edit`)}
+          className="text-sm font-bold text-blue-600 transition-colors hover:text-blue-700"
+        >
+          수정
+        </button>
       </div>
 
       <div className="mx-auto max-w-md">

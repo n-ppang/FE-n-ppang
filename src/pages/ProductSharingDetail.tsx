@@ -31,6 +31,12 @@ const ProductSharingDetail = () => {
     setComments([...comments, newComment]);
   };
 
+  const handleDeleteComment = (commentId: string) => {
+    if (window.confirm('댓글을 삭제하시겠습니까?')) {
+      setComments(comments.filter((c) => c.id !== commentId));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white pb-12">
       {/* Header */}
@@ -83,7 +89,11 @@ const ProductSharingDetail = () => {
         </div>
 
         {/* Comment Section */}
-        <CommentSection comments={comments} onAddComment={handleAddComment} />
+        <CommentSection 
+          comments={comments} 
+          onAddComment={handleAddComment} 
+          onDeleteComment={handleDeleteComment} 
+        />
       </div>
     </div>
   );

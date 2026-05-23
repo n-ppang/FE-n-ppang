@@ -30,8 +30,9 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
     setFormData({ ...formData, imageUrls: newImageUrls });
   };
 
-  const inputClasses = "w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 placeholder:text-gray-400";
-  const labelClasses = "mb-1.5 ml-1 block text-sm font-bold text-gray-700";
+  const inputClasses =
+    'w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 placeholder:text-gray-400';
+  const labelClasses = 'mb-1.5 ml-1 block text-sm font-bold text-gray-700';
 
   // Backwards compatibility for ModifyForm or other generic usages
   if (!type) {

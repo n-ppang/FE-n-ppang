@@ -48,12 +48,10 @@ const ProductCreate = ({ title, type }: ProductCreateProps) => {
     <div className="min-h-screen bg-gray-50 pb-12">
       <div className="mx-auto max-w-md px-6 py-8">
         <div className="mb-8">
-          <h1 className="text-2xl font-black tracking-tight text-gray-900">
-            {title}
-          </h1>
+          <h1 className="text-2xl font-black tracking-tight text-gray-900">{title}</h1>
           <p className="mt-2 text-sm text-gray-500">
-            {type === 'GROUP_PURCHASE' 
-              ? '함께 구매할 정보를 정확히 입력해주세요.' 
+            {type === 'GROUP_PURCHASE'
+              ? '함께 구매할 정보를 정확히 입력해주세요.'
               : '나눌 상품의 상태와 유통기한을 알려주세요.'}
           </p>
         </div>
@@ -68,7 +66,7 @@ const ProductCreate = ({ title, type }: ProductCreateProps) => {
                 : (data) => setProductSharingData(data as ProductSharingCreateRequest)
             }
           />
-          
+
           <div className="pt-4">
             <SubmitBlueButton onClick={handleCreateItem} text={'등록하기'} />
           </div>

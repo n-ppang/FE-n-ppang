@@ -45,18 +45,33 @@ const ProductCreate = ({ title, type }: ProductCreateProps) => {
   };
 
   return (
-    <div className="flex flex-col gap-10 p-20">
-      <div className="text-2xl font-bold">{title}</div>
-      <FormContainer
-        type={type}
-        formData={type === 'GROUP_PURCHASE' ? groupPurchaseData : productSharingData}
-        setFormData={
-          type === 'GROUP_PURCHASE'
-            ? (data) => setGroupPurchaseData(data as GroupPurchaseCreateRequest)
-            : (data) => setProductSharingData(data as ProductSharingCreateRequest)
-        }
-      />
-      <SubmitBlueButton onClick={handleCreateItem} text={'생성하기'} />
+    <div className="min-h-screen bg-gray-50 pb-12">
+      <div className="mx-auto max-w-md px-6 py-8">
+        <div className="mb-8">
+          <h1 className="text-2xl font-black tracking-tight text-gray-900">{title}</h1>
+          <p className="mt-2 text-sm text-gray-500">
+            {type === 'GROUP_PURCHASE'
+              ? '함께 구매할 정보를 정확히 입력해주세요.'
+              : '나눌 상품의 상태와 유통기한을 알려주세요.'}
+          </p>
+        </div>
+
+        <div className="space-y-8">
+          <FormContainer
+            type={type}
+            formData={type === 'GROUP_PURCHASE' ? groupPurchaseData : productSharingData}
+            setFormData={
+              type === 'GROUP_PURCHASE'
+                ? (data) => setGroupPurchaseData(data as GroupPurchaseCreateRequest)
+                : (data) => setProductSharingData(data as ProductSharingCreateRequest)
+            }
+          />
+
+          <div className="pt-4">
+            <SubmitBlueButton onClick={handleCreateItem} text={'등록하기'} />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

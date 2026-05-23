@@ -4,9 +4,10 @@ import type { Comment } from '../mock/CommentMockData';
 interface CommentSectionProps {
   comments: Comment[];
   onAddComment: (content: string, mention?: string) => void;
+  onDeleteComment: (id: string) => void;
 }
 
-const CommentSection = ({ comments, onAddComment }: CommentSectionProps) => {
+const CommentSection = ({ comments, onAddComment, onDeleteComment }: CommentSectionProps) => {
   const [inputValue, setInputValue] = useState('');
   const [activeMention, setActiveMention] = useState<string | undefined>(undefined);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -52,12 +53,22 @@ const CommentSection = ({ comments, onAddComment }: CommentSectionProps) => {
                 <span className="text-sm font-bold text-gray-900">{comment.author}</span>
                 <span className="text-[10px] text-gray-400">{comment.createdAt}</span>
               </div>
-              <button 
-                onClick={() => handleReply(comment.author)}
-                className="text-xs font-bold text-blue-500 hover:text-blue-600 active:scale-95"
-              >
-                답글
-              </button>
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => handleReply(comment.author)}
+                  className="text-xs font-bold text-blue-500 hover:text-blue-600 active:scale-95"
+                >
+                  답글
+                </button>
+                {comment.author === '나 (User)' && (
+                  <button 
+                    onClick={() => onDeleteComment(comment.id)}
+                    className="text-xs font-bold text-red-400 hover:text-red-500 active:scale-95"
+                  >
+                    삭제
+                  </button>
+                )}
+              </div>
             </div>
             <p className="text-sm leading-relaxed text-gray-600">
               {comment.mention && (

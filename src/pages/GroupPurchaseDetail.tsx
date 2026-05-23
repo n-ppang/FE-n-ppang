@@ -27,6 +27,12 @@ const GroupPurchaseDetail = () => {
     setComments([...comments, newComment]);
   };
 
+  const handleDeleteComment = (commentId: string) => {
+    if (window.confirm('댓글을 삭제하시겠습니까?')) {
+      setComments(comments.filter((c) => c.id !== commentId));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white pb-24">
       {/* Header */}
@@ -90,7 +96,11 @@ const GroupPurchaseDetail = () => {
         </div>
 
         {/* Comment Section */}
-        <CommentSection comments={comments} onAddComment={handleAddComment} />
+        <CommentSection 
+          comments={comments} 
+          onAddComment={handleAddComment} 
+          onDeleteComment={handleDeleteComment} 
+        />
       </div>
 
       {/* Fixed Bottom Button */}

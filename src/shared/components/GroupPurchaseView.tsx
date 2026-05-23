@@ -12,7 +12,7 @@ const GroupPurchaseView = () => {
           title={item.title}
           price={item.price}
           peopleClosed={item.peopleClosed}
-          peopleNum={item.peopleNum}
+          totalPeople={item.totalPeople}
           expirationDate={item.expirationDate}
           createdAt={item.createdAt}
         />

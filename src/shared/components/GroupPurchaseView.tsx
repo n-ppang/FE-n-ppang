@@ -7,6 +7,7 @@ const GroupPurchaseView = () => {
       {GroupPurchaseItemsMockData.map((item, index) => (
         <ItemContainer
           key={index}
+          id={item.id}
           model="group-purchase"
           title={item.title}
           price={item.price}

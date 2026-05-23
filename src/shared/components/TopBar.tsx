@@ -13,18 +13,18 @@ const TopBar = () => {
           </span>
         </Link>
 
-        <nav className="flex items-center gap-5">
-          <Link
-            to="/mypage"
-            className="text-sm font-bold text-gray-500 transition-colors hover:text-blue-600"
-          >
-            마이페이지
-          </Link>
+        <nav className="flex items-center gap-4">
           <Link
             to="/login"
-            className="text-sm font-bold text-gray-500 transition-colors hover:text-blue-600"
+            className="text-xs font-bold text-gray-500 transition-colors hover:text-blue-600"
           >
             로그인
+          </Link>
+          <Link
+            to="/signup"
+            className="rounded-xl bg-blue-50 px-3 py-2 text-xs font-bold text-blue-600 transition-all hover:bg-blue-100 active:scale-95"
+          >
+            회원가입
           </Link>
         </nav>
       </div>

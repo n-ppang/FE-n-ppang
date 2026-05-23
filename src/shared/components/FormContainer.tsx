@@ -1,7 +1,4 @@
-import type {
-  GroupPurchaseCreateRequest,
-  ProductSharingCreateRequest,
-} from '@/remote/request/CreateProductRequest';
+import { useRef, useState } from 'react';
 
 type Props = {
   type?: 'GROUP_PURCHASE' | 'PRODUCT_SHARING';
@@ -10,24 +7,42 @@ type Props = {
 };
 
 const FormContainer = ({ type, formData, setFormData }: Props) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleImageUrlChange = (index: number, value: string) => {
-    const newImageUrls = [...(formData.imageUrls || [])];
-    newImageUrls[index] = value;
-    setFormData({ ...formData, imageUrls: newImageUrls });
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      const newFiles = Array.from(files);
+      // In a real app, you'd store Files in formData and maybe upload them.
+      // For now, we'll maintain the imageUrls structure by generating previews.
+
+      const newPreviews: string[] = [];
+      newFiles.forEach((file) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const result = reader.result as string;
+          newPreviews.push(result);
+          if (newPreviews.length === newFiles.length) {
+            const updatedImageUrls = [...(formData.imageUrls || []), ...newPreviews];
+            setFormData({ ...formData, imageUrls: updatedImageUrls });
+            setImagePreviews([...imagePreviews, ...newPreviews]);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
   };
 
-  const addImageUrlField = () => {
-    setFormData({ ...formData, imageUrls: [...(formData.imageUrls || []), ''] });
-  };
-
-  const removeImageUrlField = (index: number) => {
-    const newImageUrls = (formData.imageUrls as string[]).filter((_, i) => i !== index);
-    setFormData({ ...formData, imageUrls: newImageUrls });
+  const removeImage = (index: number) => {
+    const updatedImageUrls = (formData.imageUrls as string[]).filter((_, i) => i !== index);
+    setFormData({ ...formData, imageUrls: updatedImageUrls });
+    setImagePreviews(updatedImageUrls);
   };
 
   const inputClasses =
@@ -68,16 +83,7 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
             className={inputClasses}
           />
         </div>
-        <div>
-          <label className={labelClasses}>이미지 URL</label>
-          <input
-            name="image_url"
-            value={formData.image_url || ''}
-            onChange={handleChange}
-            type="text"
-            className={inputClasses}
-          />
-        </div>
+        {/* Note: This section might still need file upload if used, but focusing on type-based forms first */}
       </div>
     );
   }
@@ -160,34 +166,54 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
       )}
 
       <div>
-        <label className={labelClasses}>사진 (URL)</label>
-        <div className="space-y-3">
+        <label className={labelClasses}>사진 등록</label>
+        <div className="grid grid-cols-3 gap-3">
           {(formData.imageUrls || []).map((url: string, index: number) => (
-            <div key={index} className="flex gap-2">
-              <input
-                value={url}
-                onChange={(e) => handleImageUrlChange(index, e.target.value)}
-                type="text"
-                placeholder={`이미지 URL #${index + 1}`}
-                className={inputClasses}
-              />
+            <div
+              key={index}
+              className="group relative aspect-square overflow-hidden rounded-xl bg-gray-100 ring-1 ring-gray-200"
+            >
+              <img src={url} alt={`Upload ${index}`} className="h-full w-full object-cover" />
               <button
                 type="button"
-                onClick={() => removeImageUrlField(index)}
-                className="flex items-center justify-center rounded-xl bg-red-50 px-4 text-sm font-bold text-red-500 transition-colors hover:bg-red-100 active:scale-95"
+                onClick={() => removeImage(index)}
+                className="absolute top-1 right-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white shadow-md transition-transform active:scale-90"
               >
-                삭제
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
               </button>
             </div>
           ))}
           <button
             type="button"
-            onClick={addImageUrlField}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-200 py-3 text-sm font-bold text-gray-500 transition-all hover:border-blue-300 hover:text-blue-500 active:scale-[0.98]"
+            onClick={() => fileInputRef.current?.click()}
+            className="flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-gray-200 bg-white text-gray-400 transition-all hover:border-blue-300 hover:bg-blue-50/30 hover:text-blue-500"
           >
-            <span className="text-lg">+</span> 사진 추가하기
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            <span className="text-[10px] font-bold">사진 추가</span>
           </button>
         </div>
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept="image/*"
+          multiple
+          className="hidden"
+        />
       </div>
     </div>
   );

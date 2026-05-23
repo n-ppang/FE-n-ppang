@@ -5,7 +5,7 @@ import SubmitBlueButton from '@/shared/components/SubmitBlueButton';
 const SignupPage = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const [formData, setFormData] = useState({
     studentId: '',
     name: '',
@@ -14,7 +14,7 @@ const SignupPage = () => {
     dormitory: '',
     roomNumber: '',
   });
-  
+
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
@@ -139,11 +139,11 @@ const SignupPage = () => {
 
           <div>
             <label className={labelClasses}>기숙사 학생 인증 사진</label>
-            <p className="mb-3 ml-1 text-[11px] font-medium leading-relaxed text-blue-500">
-              기숙사 학생 카드 사진이나 기숙사 홈페이지의 내 정보와 같은 사진이 필요해요.
+            <p className="mb-3 ml-1 text-[11px] leading-relaxed font-medium text-blue-500">
+              기숙사 학생 카드나 기숙사 홈페이지의 내 정보와 같은 사진이 필요해요.
             </p>
-            
-            <div 
+
+            <div
               onClick={() => fileInputRef.current?.click()}
               className="group relative flex aspect-video w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-gray-200 bg-white transition-all hover:border-blue-300 hover:bg-blue-50/30"
             >
@@ -157,7 +157,12 @@ const SignupPage = () => {
               ) : (
                 <div className="flex flex-col items-center gap-2 text-gray-400">
                   <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
                   </svg>
                   <span className="text-xs font-bold">인증 사진 업로드</span>
                 </div>

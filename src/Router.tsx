@@ -6,10 +6,16 @@ import GroupPurchaseCreate from './pages/GroupPurchaseCreate';
 import GroupPurchaseDetail from './pages/GroupPurchaseDetail';
 import ProductSharingDetail from './pages/ProductSharingDetail';
 import ProductEdit from './pages/ProductEdit';
+import SignupPage from './pages/SignupPage';
+import LoginPage from './pages/LoginPage';
 
 const Router = () => {
   return (
     <Routes>
+      {/* Auth */}
+      <Route path="/signup" element={<SignupPage />} />
+      <Route path="/login" element={<LoginPage />} />
+
       {/* shopping mall */}
       <Route path="/" element={<FirstPage />} />
       <Route path="/sharing-products/new" element={<ProductSharingCreate />} />

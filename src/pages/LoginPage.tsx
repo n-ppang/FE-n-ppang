@@ -24,7 +24,7 @@ const LoginPage = () => {
     }
 
     console.log('Login data:', formData);
-    alert('로그인되었습니다!');
+    alert('로그인 기능이 아직 준비되지 않았습니다.');
     navigate('/');
   };
 

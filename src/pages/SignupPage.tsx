@@ -46,7 +46,7 @@ const SignupPage = () => {
     }
 
     console.log('Signup data:', { ...formData, profileImage });
-    alert('회원가입이 완료되었습니다!');
+    alert('회원가입 기능이 아직 준비되지 않았습니다.');
     navigate('/login');
   };
 

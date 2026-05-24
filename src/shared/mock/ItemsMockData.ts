@@ -9,7 +9,7 @@ export const GroupPurchaseItemsMockData = [
     totalPeople: 10,
     expirationDate: '2024-12-31',
     createdAt: '2023-01-01',
-    imageUrls: ['https://placehold.co/600x400/f8fafc/64748b?text=Shampoo1', 'https://placehold.co/600x400/f8fafc/64748b?text=Shampoo2'],
+    imageUrl: 'https://placehold.co/600x400/f8fafc/64748b?text=Shampoo1',
   },
   {
     id: 'gp-2',
@@ -21,7 +21,7 @@ export const GroupPurchaseItemsMockData = [
     totalPeople: 10,
     expirationDate: '2025-12-10',
     createdAt: '2025-12-01',
-    imageUrls: ['https://placehold.co/600x400/f8fafc/64748b?text=Slipper'],
+    imageUrl: 'https://placehold.co/600x400/f8fafc/64748b?text=Slipper',
   },
 ];
 
@@ -32,7 +32,7 @@ export const SharingItemsMockData = [
     content: '어제 산 빵인데 너무 많아서 나눔합니다. 유통기한 얼마 안 남았어요!',
     expirationDate: '2026-12-31',
     createdAt: '2023-01-01',
-    imageUrls: ['https://placehold.co/600x400/f8fafc/64748b?text=Bread'],
+    imageUrl: 'https://placehold.co/600x400/f8fafc/64748b?text=Bread',
   },
   {
     id: 'ps-2',
@@ -40,6 +40,6 @@ export const SharingItemsMockData = [
     content: '탄산음료 박스로 샀는데 질려서 나눔해요.',
     expirationDate: '2026-05-31',
     createdAt: '2023-01-01',
-    imageUrls: ['https://placehold.co/600x400/f8fafc/64748b?text=Drink'],
+    imageUrl: 'https://placehold.co/600x400/f8fafc/64748b?text=Drink',
   },
 ];

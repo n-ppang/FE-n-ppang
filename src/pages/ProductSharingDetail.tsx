@@ -1,14 +1,14 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { SharingItemsMockData } from '@/shared/mock/ItemsMockData';
-import { SharingCommentsMockData, type Comment } from '@/shared/mock/CommentMockData';
+import { SharingCommentsMockData } from '@/shared/mock/CommentMockData';
 import CommentSection from '@/shared/components/CommentSection';
-import { useState } from 'react';
+import { useComments } from '@/shared/hooks/useComments';
 
 const ProductSharingDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const item = SharingItemsMockData.find((i) => i.id === id);
-  const [comments, setComments] = useState<Comment[]>(
+  const { comments, handleAddComment, handleDeleteComment } = useComments(
     id ? SharingCommentsMockData[id] || [] : []
   );
 
@@ -19,23 +19,6 @@ const ProductSharingDetail = () => {
   const daysLeft = Math.ceil(
     (new Date(item.expirationDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
   );
-
-  const handleAddComment = (content: string, mention?: string) => {
-    const newComment: Comment = {
-      id: Date.now().toString(),
-      author: '나 (User)',
-      content,
-      mention,
-      createdAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
-    };
-    setComments([...comments, newComment]);
-  };
-
-  const handleDeleteComment = (commentId: string) => {
-    if (window.confirm('댓글을 삭제하시겠습니까?')) {
-      setComments(comments.filter((c) => c.id !== commentId));
-    }
-  };
 
   return (
     <div className="min-h-screen bg-white pb-12">
@@ -59,7 +42,7 @@ const ProductSharingDetail = () => {
         {/* Image Carousel (Simple) */}
         <div className="aspect-square w-full bg-gray-100">
           <img
-            src={item.imageUrls?.[0] || `https://placehold.co/600x600/f8fafc/64748b?text=${encodeURIComponent(item.title)}`}
+            src={item.imageUrl || `https://placehold.co/600x600/f8fafc/64748b?text=${encodeURIComponent(item.title)}`}
             alt={item.title}
             className="h-full w-full object-cover"
           />

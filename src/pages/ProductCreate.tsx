@@ -33,6 +33,21 @@ const ProductCreate = ({ title, type }: ProductCreateProps) => {
   });
 
   const handleCreateItem = async () => {
+    // Validation
+    if (type === 'GROUP_PURCHASE') {
+      const { title, content, totalPeople, totalAmount, imageUrl, openChatLink } = groupPurchaseData;
+      if (!title.trim() || !content.trim() || !imageUrl || !openChatLink.trim() || totalPeople <= 0 || totalAmount <= 0) {
+        alert('모든 필드를 정확히 입력해주세요.');
+        return;
+      }
+    } else {
+      const { title, content, expirationDate, imageUrl } = productSharingData;
+      if (!title.trim() || !content.trim() || !expirationDate || !imageUrl) {
+        alert('모든 필드를 정확히 입력해주세요.');
+        return;
+      }
+    }
+
     try {
       const data = type === 'GROUP_PURCHASE' ? groupPurchaseData : productSharingData;
       await createProduct(data);

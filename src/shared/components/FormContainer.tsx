@@ -11,7 +11,14 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
+    
+    // Prevent negative numbers for specific fields
+    if (type === 'number' && (name === 'totalPeople' || name === 'totalAmount' || name === 'price')) {
+      const numValue = Number(value);
+      if (numValue < 0) return;
+    }
+    
     setFormData({ ...formData, [name]: value });
   };
 
@@ -112,6 +119,7 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
               value={formData.totalPeople || 0}
               onChange={handleChange}
               type="number"
+              min="0"
               placeholder="명"
               className={inputClasses}
             />
@@ -123,6 +131,7 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
               value={formData.totalAmount || 0}
               onChange={handleChange}
               type="number"
+              min="0"
               placeholder="원"
               className={inputClasses}
             />

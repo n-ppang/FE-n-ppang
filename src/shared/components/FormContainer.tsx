@@ -17,25 +17,15 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files) {
-      const newFiles = Array.from(files);
-      // In a real app, you'd store Files in formData and maybe upload them.
-      // For now, we'll maintain the imageUrls structure by generating previews.
-
-      const newPreviews: string[] = [];
-      newFiles.forEach((file) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const result = reader.result as string;
-          newPreviews.push(result);
-          if (newPreviews.length === newFiles.length) {
-            const updatedImageUrls = [...(formData.imageUrls || []), ...newPreviews];
-            setFormData({ ...formData, imageUrls: updatedImageUrls });
-            setImagePreviews([...imagePreviews, ...newPreviews]);
-          }
-        };
-        reader.readAsDataURL(file);
-      });
+    if (files && files[0]) {
+      const file = files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        setFormData({ ...formData, imageUrls: [result] });
+        setImagePreviews([result]);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -190,28 +180,29 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
               </button>
             </div>
           ))}
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-gray-200 bg-white text-gray-400 transition-all hover:border-blue-300 hover:bg-blue-50/30 hover:text-blue-500"
-          >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            <span className="text-[10px] font-bold">사진 추가</span>
-          </button>
+          {(formData.imageUrls || []).length === 0 && (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-gray-200 bg-white text-gray-400 transition-all hover:border-blue-300 hover:bg-blue-50/30 hover:text-blue-500"
+            >
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              <span className="text-[10px] font-bold">사진 추가</span>
+            </button>
+          )}
         </div>
         <input
           type="file"
           ref={fileInputRef}
           onChange={handleFileChange}
           accept="image/*"
-          multiple
           className="hidden"
         />
       </div>

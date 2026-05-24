@@ -1,39 +1,20 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { GroupPurchaseItemsMockData } from '@/shared/mock/ItemsMockData';
-import { GroupPurchaseCommentsMockData, type Comment } from '@/shared/mock/CommentMockData';
+import { GroupPurchaseCommentsMockData } from '@/shared/mock/CommentMockData';
 import CommentSection from '@/shared/components/CommentSection';
-import { useState } from 'react';
+import { useComments } from '@/shared/hooks/useComments';
 
 const GroupPurchaseDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const item = GroupPurchaseItemsMockData.find((i) => i.id === id);
-  const [comments, setComments] = useState<Comment[]>(
+  const { comments, handleAddComment, handleDeleteComment } = useComments(
     id ? GroupPurchaseCommentsMockData[id] || [] : []
   );
 
   if (!item) {
     return <div className="p-10 text-center">상품을 찾을 수 없습니다.</div>;
   }
-
-  const handleAddComment = (content: string, mention?: string) => {
-    const now = new Date();
-    const kstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
-    const newComment: Comment = {
-      id: Date.now().toString(),
-      author: '나 (User)',
-      content,
-      mention,
-      createdAt: kstDate.toISOString().replace('T', ' ').substring(0, 16),
-    };
-    setComments([...comments, newComment]);
-  };
-
-  const handleDeleteComment = (commentId: string) => {
-    if (window.confirm('댓글을 삭제하시겠습니까?')) {
-      setComments(comments.filter((c) => c.id !== commentId));
-    }
-  };
 
   return (
     <div className="min-h-screen bg-white pb-24">

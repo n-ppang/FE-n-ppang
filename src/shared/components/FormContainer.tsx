@@ -22,17 +22,16 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         const result = reader.result as string;
-        setFormData({ ...formData, imageUrls: [result] });
+        setFormData({ ...formData, imageUrl: result });
         setImagePreviews([result]);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const removeImage = (index: number) => {
-    const updatedImageUrls = (formData.imageUrls as string[]).filter((_, i) => i !== index);
-    setFormData({ ...formData, imageUrls: updatedImageUrls });
-    setImagePreviews(updatedImageUrls);
+  const removeImage = () => {
+    setFormData({ ...formData, imageUrl: '' });
+    setImagePreviews([]);
   };
 
   const inputClasses =
@@ -158,15 +157,14 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
       <div>
         <label className={labelClasses}>사진 등록</label>
         <div className="grid grid-cols-3 gap-3">
-          {(formData.imageUrls || []).map((url: string, index: number) => (
+          {formData.imageUrl && (
             <div
-              key={index}
               className="group relative aspect-square overflow-hidden rounded-xl bg-gray-100 ring-1 ring-gray-200"
             >
-              <img src={url} alt={`Upload ${index}`} className="h-full w-full object-cover" />
+              <img src={formData.imageUrl} alt="Upload" className="h-full w-full object-cover" />
               <button
                 type="button"
-                onClick={() => removeImage(index)}
+                onClick={removeImage}
                 className="absolute top-1 right-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white shadow-md transition-transform active:scale-90"
               >
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -179,8 +177,8 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
                 </svg>
               </button>
             </div>
-          ))}
-          {(formData.imageUrls || []).length === 0 && (
+          )}
+          {!formData.imageUrl && (
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}

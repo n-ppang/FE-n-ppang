@@ -21,7 +21,7 @@ const ProductCreate = ({ title, type }: ProductCreateProps) => {
     content: '',
     totalPeople: 0,
     totalAmount: 0,
-    imageUrls: [],
+    imageUrl: '',
     openChatLink: '',
   });
 
@@ -29,7 +29,7 @@ const ProductCreate = ({ title, type }: ProductCreateProps) => {
     title: '',
     content: '',
     expirationDate: '',
-    imageUrls: [],
+    imageUrl: '',
   });
 
   const handleCreateItem = async () => {

@@ -59,7 +59,7 @@ const ProductSharingDetail = () => {
         {/* Image Carousel (Simple) */}
         <div className="aspect-square w-full bg-gray-100">
           <img
-            src={item.imageUrls?.[0] || `https://placehold.co/600x600/f8fafc/64748b?text=${encodeURIComponent(item.title)}`}
+            src={item.imageUrl || `https://placehold.co/600x600/f8fafc/64748b?text=${encodeURIComponent(item.title)}`}
             alt={item.title}
             className="h-full w-full object-cover"
           />

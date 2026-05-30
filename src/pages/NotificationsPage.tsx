@@ -20,9 +20,19 @@ const NotificationsPage = () => {
                     {notification.date}
                   </span>
                 </div>
-                <p className="text-xs leading-relaxed whitespace-pre-line text-gray-600">
-                  {notification.description}
-                </p>
+                <div className="space-y-1.5">
+                  <p className="text-xs text-gray-600">
+                    입장이 완료되었습니다. 아래 링크를 통해 채팅방에 참여해주세요!
+                  </p>
+                  <a
+                    href={notification.openChatLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="break-all text-xs font-medium text-blue-600 hover:underline"
+                  >
+                    {notification.openChatLink}
+                  </a>
+                </div>
               </div>
             ))
           ) : (

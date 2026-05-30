@@ -10,6 +10,7 @@ import SignupPage from './pages/SignupPage';
 import LoginPage from './pages/LoginPage';
 import NotificationsPage from './pages/NotificationsPage';
 import MyPage from './pages/MyPage';
+import UserApprovalPage from './pages/UserApprovalPage';
 
 const Router = () => {
   return (
@@ -19,6 +20,7 @@ const Router = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/notifications" element={<NotificationsPage />} />
       <Route path="/mypage" element={<MyPage />} />
+      <Route path="/admin/approvals" element={<UserApprovalPage />} />
 
       {/* shopping mall */}
       <Route path="/" element={<FirstPage />} />

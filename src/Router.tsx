@@ -8,6 +8,7 @@ import ProductSharingDetail from './pages/ProductSharingDetail';
 import ProductEdit from './pages/ProductEdit';
 import SignupPage from './pages/SignupPage';
 import LoginPage from './pages/LoginPage';
+import NotificationsPage from './pages/NotificationsPage';
 
 const Router = () => {
   return (
@@ -15,6 +16,7 @@ const Router = () => {
       {/* Auth */}
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/notifications" element={<NotificationsPage />} />
 
       {/* shopping mall */}
       <Route path="/" element={<FirstPage />} />

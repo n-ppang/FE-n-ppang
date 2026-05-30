@@ -18,8 +18,16 @@ const SignupPage = () => {
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    
+    // 호수(roomNumber) 필드는 숫자만 입력 가능하도록 필터링
+    if (name === 'roomNumber') {
+      const numericValue = value.replace(/[^0-9]/g, '');
+      setFormData((prev) => ({ ...prev, [name]: numericValue }));
+      return;
+    }
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -114,15 +122,21 @@ const SignupPage = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className={labelClasses}>기숙사 동</label>
-              <input
+              <label className={labelClasses}>기숙사 이름</label>
+              <select
                 name="dormitory"
                 value={formData.dormitory}
                 onChange={handleChange}
-                placeholder="예: 7동"
                 className={inputClasses}
                 required
-              />
+              >
+                <option value="" disabled>
+                  기숙사 선택
+                </option>
+                <option value="제1기숙사">제1기숙사</option>
+                <option value="제2기숙사">제2기숙사</option>
+                <option value="제3기숙사">제3기숙사</option>
+              </select>
             </div>
             <div>
               <label className={labelClasses}>호수</label>
@@ -130,7 +144,8 @@ const SignupPage = () => {
                 name="roomNumber"
                 value={formData.roomNumber}
                 onChange={handleChange}
-                placeholder="예: 101호"
+                placeholder="예: 101"
+                inputMode="numeric"
                 className={inputClasses}
                 required
               />

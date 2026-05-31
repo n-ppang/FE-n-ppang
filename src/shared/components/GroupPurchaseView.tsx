@@ -37,7 +37,7 @@ const GroupPurchaseView = () => {
             id={item.postId}
             model="group-purchase"
             title={item.title}
-            price={item.totalPrice / (item.maxParticipants || 1)} // 인당 금액 계산
+            price={item.pricePerPerson} // 인당 금액 계산
             peopleClosed={item.currentParticipants || 0}
             totalPeople={item.maxParticipants}
             createdAt={item.createdAt?.split('T')[0]}

@@ -1,23 +1,61 @@
+import { useEffect, useState } from 'react';
+import { mypage } from '../remote/api/UserApi';
+import { useNavigate } from 'react-router-dom';
+
+interface UserData {
+  name: string;
+  studentId: string;
+  nickname: string;
+  dormitory: string;
+  roomNumber: string;
+}
+
 const MyPage = () => {
-  // Mock user data
-  const user = {
-    name: '김유진',
-    studentId: 'C233243',
-    nickname: '행복다람쥐',
-    dormitory: '제1기숙사',
-    roomNumber: '101',
-    password: '********',
+  const [user, setUser] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const data = await mypage();
+        setUser(data);
+      } catch (error) {
+        console.error('Failed to fetch user data:', error);
+        alert('사용자 정보를 불러오는데 실패했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    alert('로그아웃 되었습니다.');
+    navigate('/login');
   };
 
-  const handleEdit = (field: string) => {
-    alert(`${field} 수정 기능은 준비 중입니다.`);
-  };
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <p className="text-gray-500">로딩 중...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <p className="text-gray-500">사용자 정보를 찾을 수 없습니다.</p>
+      </div>
+    );
+  }
 
   const infoRowClasses = 'flex justify-between items-center py-4 border-b border-gray-50';
   const labelClasses = 'text-sm font-medium text-gray-500';
   const valueClasses = 'text-sm font-bold text-gray-900';
-  const editBtnClasses =
-    'ml-3 text-[11px] font-bold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg hover:bg-blue-100 transition-colors';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -36,9 +74,6 @@ const MyPage = () => {
           <div className={infoRowClasses}>
             <div className="flex items-center">
               <span className={labelClasses}>닉네임</span>
-              <button onClick={() => handleEdit('닉네임')} className={editBtnClasses}>
-                수정
-              </button>
             </div>
             <span className={valueClasses}>{user.nickname}</span>
           </div>
@@ -53,16 +88,13 @@ const MyPage = () => {
           <div className={infoRowClasses}>
             <div className="flex items-center">
               <span className={labelClasses}>비밀번호</span>
-              <button onClick={() => handleEdit('비밀번호')} className={editBtnClasses}>
-                수정
-              </button>
             </div>
-            <span className={valueClasses}>{user.password}</span>
+            <span className={valueClasses}>********</span>
           </div>
         </div>
 
         <button
-          onClick={() => alert('로그아웃 되었습니다.')}
+          onClick={handleLogout}
           className="mt-8 w-full rounded-2xl bg-red-50 py-4 text-sm font-bold text-red-500 transition-colors hover:bg-red-100"
         >
           로그아웃

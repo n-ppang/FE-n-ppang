@@ -10,8 +10,6 @@ const ProductSharingView = () => {
     const fetchList = async () => {
       try {
         const data = await getSharingList(0, 20, ['createdAt,desc']);
-        // API 응답 구조에 따라 data 또는 data.content 등을 사용해야 할 수 있습니다.
-        // 일반적인 Page 응답인 경우 data.content를 사용합니다.
         setItems(Array.isArray(data) ? data : data.content || []);
       } catch (error) {
         console.error('Failed to fetch sharing list:', error);
@@ -39,8 +37,8 @@ const ProductSharingView = () => {
     <div>
       {items.map((item) => (
         <ItemContainer
-          key={item.id}
-          id={item.id}
+          key={item.shareId || item.id}
+          id={item.shareId || item.id}
           model="product-sharing"
           title={item.title}
           expirationDate={item.expirationDate}

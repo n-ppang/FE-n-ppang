@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getProductDetail } from '@/remote/api/GroupPurchaseApi';
+import { getProductDetail, deleteProduct } from '@/remote/api/GroupPurchaseApi';
+import { mypage } from '@/remote/api/UserApi';
 import CommentSection from '@/shared/components/CommentSection';
 import { useComments } from '@/shared/hooks/useComments';
 
@@ -29,6 +30,7 @@ const GroupPurchaseDetail = () => {
   const navigate = useNavigate();
   const [item, setItem] = useState<GroupPurchaseDetailData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
   const { comments, setComments, handleAddComment, handleDeleteComment } = useComments([]);
 
@@ -39,10 +41,17 @@ const GroupPurchaseDetail = () => {
         return;
       }
       try {
-        const data = await getProductDetail(Number(id));
+        const [data, userData] = await Promise.all([
+          getProductDetail(Number(id)),
+          mypage().catch(() => null)
+        ]);
+        
         setItem(data);
         if (data.comments) {
           setComments(data.comments);
+        }
+        if (userData) {
+          setCurrentUserId(userData.userId);
         }
       } catch (error) {
         console.error('Failed to fetch group purchase detail:', error);
@@ -54,6 +63,18 @@ const GroupPurchaseDetail = () => {
 
     fetchDetail();
   }, [id, setComments]);
+
+  const handleDelete = async () => {
+    if (!id || !window.confirm('정말 삭제하시겠습니까?')) return;
+    try {
+      await deleteProduct(Number(id));
+      alert('삭제되었습니다.');
+      navigate('/', { replace: true });
+    } catch (error) {
+      console.error('Failed to delete product:', error);
+      alert('삭제에 실패했습니다.');
+    }
+  };
 
   if (loading) {
     return (
@@ -79,9 +100,10 @@ const GroupPurchaseDetail = () => {
     );
   }
 
+  const isAuthor = currentUserId === item.author.userId;
+
   return (
     <div className="min-h-screen bg-white pb-24">
-      {/* Header */}
       <div className="sticky top-16 z-10 flex items-center justify-between border-b border-gray-100 bg-white/80 px-4 py-3 backdrop-blur-md">
         <button onClick={() => navigate(-1)} className="p-1 text-gray-600 transition-transform active:scale-90">
           <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -89,16 +111,27 @@ const GroupPurchaseDetail = () => {
           </svg>
         </button>
         <span className="font-bold text-gray-900">공동구매 상세</span>
-        <button 
-          onClick={() => navigate(`/group-purchases/${id}/edit`)}
-          className="text-sm font-bold text-blue-600 transition-colors hover:text-blue-700 active:scale-95"
-        >
-          수정
-        </button>
+        <div className="flex items-center gap-3">
+          {isAuthor && (
+            <>
+              <button 
+                onClick={() => navigate(`/group-purchases/${id}/edit`)}
+                className="text-sm font-bold text-blue-600 transition-colors hover:text-blue-700 active:scale-95"
+              >
+                수정
+              </button>
+              <button 
+                onClick={handleDelete}
+                className="text-sm font-bold text-red-500 transition-colors hover:text-red-600 active:scale-95"
+              >
+                삭제
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="mx-auto max-w-md">
-        {/* Image Section */}
         <div className="aspect-square w-full bg-gray-50 overflow-hidden">
           <img
             src={item.thumbnailUrl || `https://placehold.co/600x600/f8fafc/64748b?text=${encodeURIComponent(item.title)}`}
@@ -107,7 +140,6 @@ const GroupPurchaseDetail = () => {
           />
         </div>
 
-        {/* Content */}
         <div className="px-6 py-8">
           <div className="mb-4">
             <div className="mb-1 flex items-center gap-2">
@@ -161,7 +193,6 @@ const GroupPurchaseDetail = () => {
           </div>
         </div>
 
-        {/* Comment Section */}
         <div className="border-t border-gray-50 pt-4">
           <CommentSection 
             comments={comments} 
@@ -171,7 +202,6 @@ const GroupPurchaseDetail = () => {
         </div>
       </div>
 
-      {/* Fixed Bottom Button */}
       <div className="fixed bottom-0 left-0 right-0 border-t border-gray-100 bg-white/90 p-4 backdrop-blur-lg">
         <div className="mx-auto max-w-md">
           <button 

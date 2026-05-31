@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getSharingDetail } from '@/remote/api/ProductSharingApi';
+import { getSharingDetail, deleteSharing } from '@/remote/api/ProductSharingApi';
+import { mypage } from '@/remote/api/UserApi';
 import CommentSection from '@/shared/components/CommentSection';
 import { useComments } from '@/shared/hooks/useComments';
 
@@ -25,6 +26,7 @@ const ProductSharingDetail = () => {
   const navigate = useNavigate();
   const [item, setItem] = useState<ProductSharingDetailData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
   const { comments, setComments, handleAddComment, handleDeleteComment } = useComments([]);
 
@@ -35,10 +37,17 @@ const ProductSharingDetail = () => {
         return;
       }
       try {
-        const data = await getSharingDetail(Number(id));
+        const [data, userData] = await Promise.all([
+          getSharingDetail(Number(id)),
+          mypage().catch(() => null)
+        ]);
+        
         setItem(data);
         if (data.comments) {
           setComments(data.comments);
+        }
+        if (userData) {
+          setCurrentUserId(userData.userId);
         }
       } catch (error) {
         console.error('Failed to fetch product sharing detail:', error);
@@ -50,6 +59,18 @@ const ProductSharingDetail = () => {
 
     fetchDetail();
   }, [id, setComments]);
+
+  const handleDelete = async () => {
+    if (!id || !window.confirm('정말 삭제하시겠습니까?')) return;
+    try {
+      await deleteSharing(Number(id));
+      alert('삭제되었습니다.');
+      navigate('/', { replace: true });
+    } catch (error) {
+      console.error('Failed to delete sharing:', error);
+      alert('삭제에 실패했습니다.');
+    }
+  };
 
   if (loading) {
     return (
@@ -79,6 +100,8 @@ const ProductSharingDetail = () => {
     (new Date(item.expirationDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
   );
 
+  const isAuthor = currentUserId === item.author?.userId;
+
   return (
     <div className="min-h-screen bg-white pb-12">
       {/* Header */}
@@ -89,12 +112,24 @@ const ProductSharingDetail = () => {
           </svg>
         </button>
         <span className="font-bold text-gray-900">나눔 상세</span>
-        <button 
-          onClick={() => navigate(`/sharing-products/${id}/edit`)}
-          className="text-sm font-bold text-blue-600 transition-colors hover:text-blue-700 active:scale-95"
-        >
-          수정
-        </button>
+        <div className="flex items-center gap-3">
+          {isAuthor && (
+            <>
+              <button 
+                onClick={() => navigate(`/sharing-products/${id}/edit`)}
+                className="text-sm font-bold text-blue-600 transition-colors hover:text-blue-700 active:scale-95"
+              >
+                수정
+              </button>
+              <button 
+                onClick={handleDelete}
+                className="text-sm font-bold text-red-500 transition-colors hover:text-red-600 active:scale-95"
+              >
+                삭제
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="mx-auto max-w-md">

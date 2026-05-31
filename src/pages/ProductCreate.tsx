@@ -1,4 +1,4 @@
-import { createProduct } from '@/remote/api/ProductApi';
+import { createProduct } from '@/remote/api/GroupPurchaseApi';
 import type {
   GroupPurchaseCreateRequest,
   ProductSharingCreateRequest,
@@ -19,9 +19,9 @@ const ProductCreate = ({ title, type }: ProductCreateProps) => {
   const [groupPurchaseData, setGroupPurchaseData] = useState<GroupPurchaseCreateRequest>({
     title: '',
     content: '',
-    totalPeople: 0,
-    totalAmount: 0,
-    imageUrl: '',
+    maxParticipants: 0,
+    totalPrice: 0,
+    thumbnailUrl: '',
     openChatLink: '',
   });
 
@@ -29,20 +29,28 @@ const ProductCreate = ({ title, type }: ProductCreateProps) => {
     title: '',
     content: '',
     expirationDate: '',
-    imageUrl: '',
+    thumbnailUrl: '',
   });
 
   const handleCreateItem = async () => {
     // Validation
     if (type === 'GROUP_PURCHASE') {
-      const { title, content, totalPeople, totalAmount, imageUrl, openChatLink } = groupPurchaseData;
-      if (!title.trim() || !content.trim() || !imageUrl || !openChatLink.trim() || totalPeople <= 0 || totalAmount <= 0) {
+      const { title, content, maxParticipants, totalPrice, thumbnailUrl, openChatLink } =
+        groupPurchaseData;
+      if (
+        !title.trim() ||
+        !content.trim() ||
+        !thumbnailUrl ||
+        !openChatLink.trim() ||
+        maxParticipants <= 0 ||
+        totalPrice <= 0
+      ) {
         alert('모든 필드를 정확히 입력해주세요.');
         return;
       }
     } else {
-      const { title, content, expirationDate, imageUrl } = productSharingData;
-      if (!title.trim() || !content.trim() || !expirationDate || !imageUrl) {
+      const { title, content, expirationDate, thumbnailUrl } = productSharingData;
+      if (!title.trim() || !content.trim() || !expirationDate || !thumbnailUrl) {
         alert('모든 필드를 정확히 입력해주세요.');
         return;
       }

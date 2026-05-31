@@ -1,9 +1,9 @@
 export type GroupPurchaseCreateRequest = {
   title: string;
   content: string;
-  totalPeople: number;
-  totalAmount: number;
-  imageUrl: string;
+  thumbnailUrl: string;
+  totalPrice: number;
+  maxParticipants: number;
   openChatLink: string;
 };
 
@@ -11,5 +11,5 @@ export type ProductSharingCreateRequest = {
   title: string;
   content: string;
   expirationDate: string;
-  imageUrl: string;
+  thumbnailUrl: string;
 };

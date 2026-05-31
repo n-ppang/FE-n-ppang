@@ -93,6 +93,24 @@ const MyPage = () => {
           </div>
         </div>
 
+        <div className="mt-6 space-y-3">
+          <button
+            onClick={() => navigate('/mypage/posts')}
+            className="flex w-full items-center justify-between rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:bg-gray-50 active:scale-[0.98]"
+          >
+            <span className="text-sm font-bold text-gray-700">내가 작성한 게시글 목록</span>
+            <span className="text-gray-400">〉</span>
+          </button>
+
+          <button
+            onClick={() => navigate('/mypage/participations')}
+            className="flex w-full items-center justify-between rounded-2xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:bg-gray-50 active:scale-[0.98]"
+          >
+            <span className="text-sm font-bold text-gray-700">내가 참여한 게시글 목록</span>
+            <span className="text-gray-400">〉</span>
+          </button>
+        </div>
+
         <button
           onClick={handleLogout}
           className="mt-8 w-full rounded-2xl bg-red-50 py-4 text-sm font-bold text-red-500 transition-colors hover:bg-red-100"

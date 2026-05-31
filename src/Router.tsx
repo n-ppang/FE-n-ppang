@@ -9,6 +9,8 @@ import SignupPage from './pages/SignupPage';
 import LoginPage from './pages/LoginPage';
 import NotificationsPage from './pages/NotificationsPage';
 import MyPage from './pages/MyPage';
+import MyPostsPage from './pages/MyPostsPage';
+import MyParticipationsPage from './pages/MyParticipationsPage';
 import UserApprovalPage from './pages/UserApprovalPage';
 import DormitoryVerificationPage from './pages/DormitoryVerificationPage';
 
@@ -20,12 +22,15 @@ const Router = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/notifications" element={<NotificationsPage />} />
       <Route path="/mypage" element={<MyPage />} />
+      <Route path="/mypage/posts" element={<MyPostsPage />} />
+      <Route path="/mypage/participations" element={<MyParticipationsPage />} />
       <Route path="/admin/approvals" element={<UserApprovalPage />} />
       <Route path="/signup/verification" element={<DormitoryVerificationPage />} />
 
-      {/* shopping mall */}
+      {/* Home */}
       <Route path="/" element={<FirstPage />} />
 
+      {/* Posts */}
       <Route path="/sharing-products/new" element={<ProductSharingCreate />} />
       <Route path="/group-purchases/new" element={<GroupPurchaseCreate />} />
 

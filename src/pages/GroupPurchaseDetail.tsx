@@ -1,76 +1,186 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { GroupPurchaseItemsMockData } from '@/shared/mock/ItemsMockData';
-import { GroupPurchaseCommentsMockData } from '@/shared/mock/CommentMockData';
+import { useEffect, useState } from 'react';
+import { getProductDetail, deleteProduct } from '@/remote/api/GroupPurchaseApi';
+import { mypage } from '@/remote/api/UserApi';
 import CommentSection from '@/shared/components/CommentSection';
 import { useComments } from '@/shared/hooks/useComments';
+
+interface GroupPurchaseDetailData {
+  postId: number;
+  title: string;
+  content: string;
+  thumbnailUrl: string;
+  totalPrice: number;
+  pricePerPerson: number;
+  currentParticipants: number;
+  maxParticipants: number;
+  status: string;
+  author: {
+    userId: number;
+    nickname: string;
+    roomNumber: string;
+  };
+  openChatLink?: string;
+  createdAt: string;
+  comments?: any[];
+}
 
 const GroupPurchaseDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const item = GroupPurchaseItemsMockData.find((i) => i.id === id);
-  const { comments, handleAddComment, handleDeleteComment } = useComments(
-    id ? GroupPurchaseCommentsMockData[id] || [] : []
-  );
+  const [item, setItem] = useState<GroupPurchaseDetailData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+
+  const { comments, setComments, handleAddComment, handleDeleteComment } = useComments([]);
+
+  useEffect(() => {
+    const fetchDetail = async () => {
+      if (!id || isNaN(Number(id))) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const [data, userData] = await Promise.all([
+          getProductDetail(Number(id)),
+          mypage().catch(() => null)
+        ]);
+        
+        setItem(data);
+        if (data.comments) {
+          setComments(data.comments);
+        }
+        if (userData) {
+          setCurrentUserId(userData.userId);
+        }
+      } catch (error) {
+        console.error('Failed to fetch group purchase detail:', error);
+        alert('정보를 불러오는데 실패했습니다.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDetail();
+  }, [id, setComments]);
+
+  const handleDelete = async () => {
+    if (!id || !window.confirm('정말 삭제하시겠습니까?')) return;
+    try {
+      await deleteProduct(Number(id));
+      alert('삭제되었습니다.');
+      navigate('/', { replace: true });
+    } catch (error) {
+      console.error('Failed to delete product:', error);
+      alert('삭제에 실패했습니다.');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white pb-24">
+        <p className="text-gray-500 font-medium italic animate-pulse">데이터를 불러오는 중...</p>
+      </div>
+    );
+  }
 
   if (!item) {
-    return <div className="p-10 text-center">상품을 찾을 수 없습니다.</div>;
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-white pb-24 text-center px-6">
+        <div className="mb-4 text-4xl">🔍</div>
+        <h2 className="text-xl font-bold text-gray-900 mb-2">상품을 찾을 수 없습니다</h2>
+        <p className="text-sm text-gray-500 mb-8">존재하지 않거나 올바르지 않은 접근입니다.</p>
+        <button 
+          onClick={() => navigate(-1)}
+          className="rounded-xl bg-gray-100 px-6 py-3 text-sm font-bold text-gray-600 transition-colors hover:bg-gray-200"
+        >
+          뒤로 가기
+        </button>
+      </div>
+    );
   }
+
+  const isAuthor = currentUserId === item.author.userId;
 
   return (
     <div className="min-h-screen bg-white pb-24">
-      {/* Header */}
       <div className="sticky top-16 z-10 flex items-center justify-between border-b border-gray-100 bg-white/80 px-4 py-3 backdrop-blur-md">
-        <button onClick={() => navigate(-1)} className="p-1 text-gray-600">
+        <button onClick={() => navigate(-1)} className="p-1 text-gray-600 transition-transform active:scale-90">
           <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
         <span className="font-bold text-gray-900">공동구매 상세</span>
-        <button 
-          onClick={() => navigate(`/group-purchases/${id}/edit`)}
-          className="text-sm font-bold text-blue-600 transition-colors hover:text-blue-700"
-        >
-          수정
-        </button>
+        <div className="flex items-center gap-3">
+          {isAuthor && (
+            <>
+              <button 
+                onClick={() => navigate(`/group-purchases/${id}/edit`)}
+                className="text-sm font-bold text-blue-600 transition-colors hover:text-blue-700 active:scale-95"
+              >
+                수정
+              </button>
+              <button 
+                onClick={handleDelete}
+                className="text-sm font-bold text-red-500 transition-colors hover:text-red-600 active:scale-95"
+              >
+                삭제
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="mx-auto max-w-md">
-        {/* Image Carousel (Simple) */}
-        <div className="aspect-square w-full bg-gray-100">
+        <div className="aspect-square w-full bg-gray-50 overflow-hidden">
           <img
-            src={item.imageUrl || `https://placehold.co/600x600/f8fafc/64748b?text=${encodeURIComponent(item.title)}`}
+            src={item.thumbnailUrl || `https://placehold.co/600x600/f8fafc/64748b?text=${encodeURIComponent(item.title)}`}
             alt={item.title}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
           />
         </div>
 
-        {/* Content */}
         <div className="px-6 py-8">
-          <div className="mb-6">
-            <h1 className="text-2xl font-black tracking-tight text-gray-900">{item.title}</h1>
-            <p className="mt-2 text-sm text-gray-400">{item.createdAt} 등록</p>
+          <div className="mb-4">
+            <div className="mb-1 flex items-center gap-2">
+              <span className="rounded-md bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">
+                {item.status}
+              </span>
+              <span className="text-xs font-bold text-gray-400">
+                {item.author.nickname} · {item.author.roomNumber}호
+              </span>
+            </div>
+            <h1 className="text-2xl font-black tracking-tight text-gray-900 leading-tight">{item.title}</h1>
+            <p className="mt-2 text-sm text-gray-400">{item.createdAt?.split('T')[0]} 등록</p>
           </div>
 
-          <div className="mb-8 space-y-4 rounded-2xl bg-blue-50 p-6">
+          <div className="mb-8 space-y-4 rounded-3xl bg-blue-50/50 p-6 ring-1 ring-blue-100">
             <div className="flex items-center justify-between">
               <span className="text-sm font-bold text-blue-600">인당 금액</span>
-              <span className="text-xl font-black text-blue-700">{item.price.toLocaleString()}원</span>
+              <div className="text-right">
+                <span className="text-2xl font-black text-blue-700">{item.pricePerPerson.toLocaleString()}</span>
+                <span className="ml-0.5 text-sm font-bold text-blue-700">원</span>
+              </div>
             </div>
             <div className="flex items-center justify-between border-t border-blue-100 pt-4">
-              <span className="text-xs text-blue-400">총 금액</span>
-              <span className="text-sm font-bold text-blue-500">{item.totalAmount?.toLocaleString()}원</span>
+              <span className="text-xs font-semibold text-blue-400">총 금액</span>
+              <span className="text-sm font-bold text-blue-500">{item.totalPrice?.toLocaleString()}원</span>
             </div>
           </div>
 
           <div className="mb-8">
-            <div className="mb-2 flex items-center justify-between text-sm font-bold">
+            <div className="mb-3 flex items-center justify-between text-sm font-bold">
               <span className="text-gray-900">모집 현황</span>
-              <span className="text-blue-600">{item.peopleClosed} / {item.totalPeople}명</span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-blue-600">{item.currentParticipants || 0}</span>
+                <span className="text-gray-300">/</span>
+                <span className="text-gray-600">{item.maxParticipants}명</span>
+              </div>
             </div>
-            <div className="h-3 w-full overflow-hidden rounded-full bg-gray-100">
+            <div className="h-3 w-full overflow-hidden rounded-full bg-gray-100 shadow-inner">
               <div 
-                className="h-full bg-blue-600 transition-all duration-1000" 
-                style={{ width: `${(item.peopleClosed / item.totalPeople) * 100}%` }}
+                className="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-1000 ease-out" 
+                style={{ width: `${Math.min(100, ((item.currentParticipants || 0) / item.maxParticipants) * 100)}%` }}
               />
             </div>
           </div>
@@ -83,19 +193,29 @@ const GroupPurchaseDetail = () => {
           </div>
         </div>
 
-        {/* Comment Section */}
-        <CommentSection 
-          comments={comments} 
-          onAddComment={handleAddComment} 
-          onDeleteComment={handleDeleteComment} 
-        />
+        <div className="border-t border-gray-50 pt-4">
+          <CommentSection 
+            comments={comments} 
+            onAddComment={handleAddComment} 
+            onDeleteComment={handleDeleteComment} 
+          />
+        </div>
       </div>
 
-      {/* Fixed Bottom Button */}
-      <div className="fixed bottom-0 left-0 right-0 border-t border-gray-100 bg-white p-4">
+      <div className="fixed bottom-0 left-0 right-0 border-t border-gray-100 bg-white/90 p-4 backdrop-blur-lg">
         <div className="mx-auto max-w-md">
-          <button className="w-full rounded-2xl bg-blue-600 py-4 text-center text-lg font-black text-white shadow-lg shadow-blue-200 transition-all hover:bg-blue-700 active:scale-95">
-            참여하기
+          <button 
+            onClick={() => {
+              if (item.openChatLink) {
+                window.open(item.openChatLink, '_blank');
+              } else {
+                alert('오픈채팅방 링크가 등록되지 않았습니다.');
+              }
+            }}
+            disabled={!item.openChatLink}
+            className="w-full rounded-2xl bg-blue-600 py-4 text-center text-lg font-black text-white shadow-lg shadow-blue-200 transition-all hover:bg-blue-700 active:scale-95 disabled:bg-gray-300 disabled:shadow-none"
+          >
+            오픈채팅방 참여하기
           </button>
         </div>
       </div>

@@ -1,5 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { GroupPurchaseItemsMockData, SharingItemsMockData } from '@/shared/mock/ItemsMockData';
+import { getProductDetail, updateProduct } from '@/remote/api/GroupPurchaseApi';
+import { getSharingDetail, updateSharing } from '@/remote/api/ProductSharingApi';
+import { imgUpload } from '@/remote/api/AuthApi';
 import FormContainer from '@/shared/components/FormContainer';
 import SubmitBlueButton from '@/shared/components/SubmitBlueButton';
 import { useState, useEffect } from 'react';
@@ -13,31 +15,75 @@ const ProductEdit = ({ type }: ProductEditProps) => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const data = type === 'GROUP_PURCHASE' 
-      ? GroupPurchaseItemsMockData.find(i => i.id === id)
-      : SharingItemsMockData.find(i => i.id === id);
+    const fetchDetail = async () => {
+      if (!id) return;
+      try {
+        let data;
+        if (type === 'GROUP_PURCHASE') {
+          data = await getProductDetail(Number(id));
+        } else {
+          data = await getSharingDetail(Number(id));
+        }
+        setFormData(data);
+      } catch (error) {
+        console.error('Failed to fetch product for edit:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    if (data) {
-      setFormData(data);
-    }
+    fetchDetail();
   }, [id, type]);
 
   const handleUpdateItem = async () => {
+    if (!id) return;
     try {
-      // In a real app, we would call an update API here
-      // await updateProduct(id, formData);
-      alert('아직 수정 기능이 준비되지 않았습니다.');
-      navigate(-1);
+      // 1. 이미지 파일이 새로 선택된 경우 업로드 우선 수행
+      let finalImageUrl = type === 'GROUP_PURCHASE' ? formData.thumbnailUrl : formData.imageUrl;
+      
+      if (formData.imageFile) {
+        const uploadRes = await imgUpload(formData.imageFile, 'POST');
+        finalImageUrl = uploadRes.imageUrl;
+      }
+
+      // 2. 업로드된 URL을 포함하여 수정 요청
+      if (type === 'GROUP_PURCHASE') {
+        const updateData = {
+          ...formData,
+          thumbnailUrl: finalImageUrl,
+        };
+        // imageFile은 API 전송 시 제외 (필요한 경우)
+        delete updateData.imageFile;
+        
+        await updateProduct(Number(id), updateData);
+        alert('공동구매 정보가 수정되었습니다.');
+        navigate(-1);
+      } else {
+        const updateData = {
+          ...formData,
+          imageUrl: finalImageUrl,
+        };
+        delete updateData.imageFile;
+
+        await updateSharing(Number(id), updateData);
+        alert('나눔 정보가 수정되었습니다.');
+        navigate(-1);
+      }
     } catch (error) {
       console.error('Failed to update product:', error);
       alert('수정에 실패했습니다.');
     }
   };
 
-  if (!formData) {
+  if (loading) {
     return <div className="p-10 text-center text-gray-500">데이터를 불러오는 중...</div>;
+  }
+
+  if (!formData) {
+    return <div className="p-10 text-center text-gray-500">데이터를 찾을 수 없습니다.</div>;
   }
 
   return (

@@ -8,13 +8,13 @@ type Props = {
 
 const FormContainer = ({ type, formData, setFormData }: Props) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [imagePreview, setImagePreview] = useState<string>(formData.thumbnailUrl || '');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     
     // Prevent negative numbers for specific fields
-    if (type === 'number' && (name === 'totalPeople' || name === 'totalAmount' || name === 'price')) {
+    if (type === 'number' && (name === 'maxParticipants' || name === 'totalPrice' || name === 'price')) {
       const numValue = Number(value);
       if (numValue < 0) return;
     }
@@ -26,19 +26,19 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
     const files = e.target.files;
     if (files && files[0]) {
       const file = files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        setFormData({ ...formData, imageUrl: result });
-        setImagePreviews([result]);
-      };
-      reader.readAsDataURL(file);
+      
+      // Preview
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+      
+      // Store File object in formData for later upload
+      setFormData({ ...formData, imageFile: file, thumbnailUrl: previewUrl });
     }
   };
 
   const removeImage = () => {
-    setFormData({ ...formData, imageUrl: '' });
-    setImagePreviews([]);
+    setFormData({ ...formData, imageFile: undefined, thumbnailUrl: '' });
+    setImagePreview('');
   };
 
   const inputClasses =
@@ -79,7 +79,6 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
             className={inputClasses}
           />
         </div>
-        {/* Note: This section might still need file upload if used, but focusing on type-based forms first */}
       </div>
     );
   }
@@ -115,8 +114,8 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
           <div>
             <label className={labelClasses}>총 인원수</label>
             <input
-              name="totalPeople"
-              value={formData.totalPeople || 0}
+              name="maxParticipants"
+              value={formData.maxParticipants || 0}
               onChange={handleChange}
               type="number"
               min="0"
@@ -127,8 +126,8 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
           <div>
             <label className={labelClasses}>총 금액</label>
             <input
-              name="totalAmount"
-              value={formData.totalAmount || 0}
+              name="totalPrice"
+              value={formData.totalPrice || 0}
               onChange={handleChange}
               type="number"
               min="0"
@@ -166,11 +165,11 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
       <div>
         <label className={labelClasses}>사진 등록</label>
         <div className="grid grid-cols-3 gap-3">
-          {formData.imageUrl && (
+          {imagePreview && (
             <div
               className="group relative aspect-square overflow-hidden rounded-xl bg-gray-100 ring-1 ring-gray-200"
             >
-              <img src={formData.imageUrl} alt="Upload" className="h-full w-full object-cover" />
+              <img src={imagePreview} alt="Upload" className="h-full w-full object-cover" />
               <button
                 type="button"
                 onClick={removeImage}
@@ -187,7 +186,7 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
               </button>
             </div>
           )}
-          {!formData.imageUrl && (
+          {!imagePreview && (
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}

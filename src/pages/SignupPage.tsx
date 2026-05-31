@@ -40,7 +40,13 @@ const SignupPage = () => {
     }
 
     try {
-      await signup(formData);
+      const response = await signup(formData);
+      
+      // API 응답에서 accessToken을 추출하여 로컬 스토리지에 저장합니다.
+      if (response && response.accessToken) {
+        localStorage.setItem('accessToken', response.accessToken);
+      }
+
       alert('회원가입 기본 정보가 저장되었습니다. 기숙사 인증 단계로 이동합니다.');
       navigate('/signup/verification');
     } catch (error) {

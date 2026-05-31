@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SubmitBlueButton from '@/shared/components/SubmitBlueButton';
-import { verification } from '@/remote/api/AuthApi';
+import { imgUpload, verification } from '@/remote/api/AuthApi';
 
 const DormitoryVerificationPage = () => {
   const navigate = useNavigate();
@@ -29,8 +29,9 @@ const DormitoryVerificationPage = () => {
     }
 
     try {
-      await verification({ imageUrl: imagePreview });
-      alert('인증 요청이 완료되었습니다! 관리자 승인 후 로그인이 가능합니다.');
+      const uploadResult = await imgUpload(profileImage);
+      await verification({ imageUrl: uploadResult.imageUrl });
+      alert('인증 요청이 완료되었습니다! 관리자 승인 후 권한이 부여됩니다.');
       navigate('/login');
     } catch (error) {
       console.error('Verification process failed:', error);
@@ -45,7 +46,9 @@ const DormitoryVerificationPage = () => {
       <div className="mx-auto max-w-md px-6 py-12">
         <div className="mb-10 text-center">
           <h1 className="text-3xl font-black tracking-tight text-gray-900">기숙사 인증</h1>
-          <p className="mt-2 text-sm text-gray-500">nppang 이용을 위해 기숙사 학생 인증이 필요해요.</p>
+          <p className="mt-2 text-sm text-gray-500">
+            nppang 이용을 위해 기숙사 학생 인증이 필요해요.
+          </p>
         </div>
 
         <div className="space-y-6">

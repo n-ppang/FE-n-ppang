@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import SubmitBlueButton from '@/shared/components/SubmitBlueButton';
+import { login } from '@/remote/api/AuthApi';
+import type { LoginRequest } from '@/remote/request/auth/LoginRequest';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<LoginRequest>({
     studentId: '',
     password: '',
   });
@@ -14,7 +16,7 @@ const LoginPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     if (e) e.preventDefault();
 
     // Simple mandatory check
@@ -23,9 +25,13 @@ const LoginPage = () => {
       return;
     }
 
-    console.log('Login data:', formData);
-    alert('로그인 기능이 아직 준비되지 않았습니다.');
-    navigate('/');
+    try {
+      await login(formData);
+      alert('로그인에 성공했습니다!');
+      navigate('/');
+    } catch (error) {
+      alert(`로그인에 실패했습니다.\n${error.response.data.errorMessage}`);
+    }
   };
 
   const inputClasses =

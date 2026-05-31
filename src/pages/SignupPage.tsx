@@ -1,12 +1,13 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import SubmitBlueButton from '@/shared/components/SubmitBlueButton';
+import { signup } from '@/remote/api/AuthApi';
+import type { SignupRequest } from '@/remote/request/auth/SignupRequest';
 
 const SignupPage = () => {
   const navigate = useNavigate();
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<SignupRequest>({
     studentId: '',
     name: '',
     nickname: '',
@@ -15,12 +16,9 @@ const SignupPage = () => {
     roomNumber: '',
   });
 
-  const [profileImage, setProfileImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    
+
     // 호수(roomNumber) 필드는 숫자만 입력 가능하도록 필터링
     if (name === 'roomNumber') {
       const numericValue = value.replace(/[^0-9]/g, '');
@@ -31,31 +29,30 @@ const SignupPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setProfileImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     if (e) e.preventDefault();
 
     // Simple mandatory check
     const isAllFieldsFilled = Object.values(formData).every((val) => val.trim() !== '');
-    if (!isAllFieldsFilled || !profileImage) {
+    if (!isAllFieldsFilled) {
       alert('모든 필드를 채워주세요.');
       return;
     }
 
-    console.log('Signup data:', { ...formData, profileImage });
-    alert('회원가입 기능이 아직 준비되지 않았습니다.');
-    navigate('/login');
+    try {
+      const response = await signup(formData);
+      
+      // API 응답에서 accessToken을 추출하여 로컬 스토리지에 저장합니다.
+      if (response && response.accessToken) {
+        localStorage.setItem('accessToken', response.accessToken);
+      }
+
+      alert('회원가입 기본 정보가 저장되었습니다. 기숙사 인증 단계로 이동합니다.');
+      navigate('/signup/verification');
+    } catch (error) {
+      console.error('Signup process failed:', error);
+      alert('회원가입에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   const inputClasses =
@@ -152,49 +149,8 @@ const SignupPage = () => {
             </div>
           </div>
 
-          <div>
-            <label className={labelClasses}>기숙사 학생 인증 사진</label>
-            <p className="mb-3 ml-1 text-[11px] leading-relaxed font-medium text-blue-500">
-              기숙사 학생 카드나 기숙사 홈페이지의 내 정보와 같은 사진이 필요해요.
-            </p>
-
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              className="group relative flex aspect-video w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-gray-200 bg-white transition-all hover:border-blue-300 hover:bg-blue-50/30"
-            >
-              {imagePreview ? (
-                <>
-                  <img src={imagePreview} alt="Preview" className="h-full w-full object-cover" />
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
-                    <span className="text-xs font-bold text-white">사진 변경하기</span>
-                  </div>
-                </>
-              ) : (
-                <div className="flex flex-col items-center gap-2 text-gray-400">
-                  <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <span className="text-xs font-bold">인증 사진 업로드</span>
-                </div>
-              )}
-            </div>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept="image/*"
-              className="hidden"
-              required
-            />
-          </div>
-
           <div className="pt-4">
-            <SubmitBlueButton onClick={() => {}} text="가입하기" />
+            <SubmitBlueButton onClick={() => {}} text="가입하고 인증하기" />
           </div>
         </form>
 

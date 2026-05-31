@@ -26,11 +26,21 @@ const LoginPage = () => {
     }
 
     try {
-      await login(formData);
-      alert('로그인에 성공했습니다!');
-      navigate('/');
-    } catch (error) {
-      alert(`로그인에 실패했습니다.\n${error.response.data.errorMessage}`);
+      const response = await login(formData);
+      
+      // 서버 응답 구조에 따라 accessToken을 추출하여 저장합니다.
+      const token = response.accessToken || response.token;
+      
+      if (token) {
+        localStorage.setItem('accessToken', token);
+        alert('로그인에 성공했습니다!');
+        navigate('/');
+      } else {
+        throw new Error('토큰을 찾을 수 없습니다.');
+      }
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.errorMessage || error.message || '알 수 없는 오류가 발생했습니다.';
+      alert(`로그인에 실패했습니다.\n${errorMessage}`);
     }
   };
 

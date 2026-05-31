@@ -1,12 +1,14 @@
 import { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import SubmitBlueButton from '@/shared/components/SubmitBlueButton';
+import { signup } from '@/remote/api/AuthApi';
+import type { SignupRequest } from '@/remote/request/auth/SignupRequest';
 
 const SignupPage = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<SignupRequest>({
     studentId: '',
     name: '',
     nickname: '',
@@ -20,7 +22,7 @@ const SignupPage = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    
+
     // 호수(roomNumber) 필드는 숫자만 입력 가능하도록 필터링
     if (name === 'roomNumber') {
       const numericValue = value.replace(/[^0-9]/g, '');
@@ -43,19 +45,30 @@ const SignupPage = () => {
     }
   };
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     if (e) e.preventDefault();
 
     // Simple mandatory check
     const isAllFieldsFilled = Object.values(formData).every((val) => val.trim() !== '');
-    if (!isAllFieldsFilled || !profileImage) {
+    if (!isAllFieldsFilled || !profileImage || !imagePreview) {
       alert('모든 필드를 채워주세요.');
       return;
     }
 
-    console.log('Signup data:', { ...formData, profileImage });
-    alert('회원가입 기능이 아직 준비되지 않았습니다.');
-    navigate('/login');
+    try {
+      const response = await signup(formData);
+      console.log('Signup successful:', response);
+      // if (response.data?.accessToken) {
+      //   console.log('Signup successful, access token received:', response.data.accessToken);
+      //   localStorage.setItem('accessToken', response.data.accessToken);
+      // }
+      // await verification({ imageUrl: imagePreview });
+      alert('회원가입이 완료되었습니다! 관리자 승인 후 로그인이 가능합니다.');
+      navigate('/login');
+    } catch (error) {
+      console.log('Signup process failed:', error.response?.data || error);
+      alert('회원가입에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   const inputClasses =

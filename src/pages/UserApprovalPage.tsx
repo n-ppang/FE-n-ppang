@@ -10,12 +10,14 @@ const UserApprovalPage = () => {
     try {
       setLoading(true);
       const data = await getUserList();
-      // API 응답 데이터에 UI용 선택 상태(isApproved) 추가
-      const requestsWithSelection = data.content.map((item) => ({
-        ...item,
-        isApproved: false,
-      }));
-      setRequests(requestsWithSelection);
+      // 'PENDING' 상태인 요청만 필터링하고 UI용 선택 상태(isApproved) 추가
+      const pendingRequests = data.content
+        .filter((item) => item.status === 'PENDING')
+        .map((item) => ({
+          ...item,
+          isApproved: false,
+        }));
+      setRequests(pendingRequests);
     } catch (error) {
       console.error('Failed to fetch verification requests:', error);
       alert('목록을 불러오는데 실패했습니다.');

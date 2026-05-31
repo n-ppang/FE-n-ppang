@@ -85,12 +85,6 @@ const MyPage = () => {
             <span className={labelClasses}>호수</span>
             <span className={valueClasses}>{user.roomNumber}</span>
           </div>
-          <div className={infoRowClasses}>
-            <div className="flex items-center">
-              <span className={labelClasses}>비밀번호</span>
-            </div>
-            <span className={valueClasses}>********</span>
-          </div>
         </div>
 
         <div className="mt-6 space-y-3">

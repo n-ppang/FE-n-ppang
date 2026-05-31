@@ -1,5 +1,5 @@
 import { api } from '@/remote/axiosInstance';
-import type { GroupPurchaseCreateRequest } from '../request/CreateProductRequest';
+import type { GroupPurchaseCreateRequest } from '../request/GroupPurchaseCreateRequest';
 
 /**
  * 공동구매

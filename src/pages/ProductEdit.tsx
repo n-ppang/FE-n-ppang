@@ -1,5 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { getProductDetail, updateProduct } from '@/remote/api/GroupPurchaseApi';
+import { getSharingDetail, updateSharing } from '@/remote/api/ProductSharingApi';
+import { imgUpload } from '@/remote/api/AuthApi';
 import FormContainer from '@/shared/components/FormContainer';
 import SubmitBlueButton from '@/shared/components/SubmitBlueButton';
 import { useState, useEffect } from 'react';
@@ -19,7 +21,12 @@ const ProductEdit = ({ type }: ProductEditProps) => {
     const fetchDetail = async () => {
       if (!id) return;
       try {
-        const data = await getProductDetail(Number(id));
+        let data;
+        if (type === 'GROUP_PURCHASE') {
+          data = await getProductDetail(Number(id));
+        } else {
+          data = await getSharingDetail(Number(id));
+        }
         setFormData(data);
       } catch (error) {
         console.error('Failed to fetch product for edit:', error);
@@ -29,17 +36,41 @@ const ProductEdit = ({ type }: ProductEditProps) => {
     };
 
     fetchDetail();
-  }, [id]);
+  }, [id, type]);
 
   const handleUpdateItem = async () => {
     if (!id) return;
     try {
+      // 1. 이미지 파일이 새로 선택된 경우 업로드 우선 수행
+      let finalImageUrl = type === 'GROUP_PURCHASE' ? formData.thumbnailUrl : formData.imageUrl;
+      
+      if (formData.imageFile) {
+        const uploadRes = await imgUpload(formData.imageFile, 'POST');
+        finalImageUrl = uploadRes.imageUrl;
+      }
+
+      // 2. 업로드된 URL을 포함하여 수정 요청
       if (type === 'GROUP_PURCHASE') {
-        await updateProduct(Number(id), formData);
+        const updateData = {
+          ...formData,
+          thumbnailUrl: finalImageUrl,
+        };
+        // imageFile은 API 전송 시 제외 (필요한 경우)
+        delete updateData.imageFile;
+        
+        await updateProduct(Number(id), updateData);
         alert('공동구매 정보가 수정되었습니다.');
         navigate(-1);
       } else {
-        alert('나눔 수정 기능은 준비 중입니다.');
+        const updateData = {
+          ...formData,
+          imageUrl: finalImageUrl,
+        };
+        delete updateData.imageFile;
+
+        await updateSharing(Number(id), updateData);
+        alert('나눔 정보가 수정되었습니다.');
+        navigate(-1);
       }
     } catch (error) {
       console.error('Failed to update product:', error);

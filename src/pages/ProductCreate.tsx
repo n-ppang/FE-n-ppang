@@ -1,9 +1,8 @@
 import { createProduct } from '@/remote/api/GroupPurchaseApi';
+import { createSharing } from '@/remote/api/ProductSharingApi';
 import { imgUpload } from '@/remote/api/AuthApi';
-import type {
-  GroupPurchaseCreateRequest,
-  ProductSharingCreateRequest,
-} from '@/remote/request/CreateProductRequest';
+import type { GroupPurchaseCreateRequest } from '@/remote/request/GroupPurchaseCreateRequest';
+import type { ProductSharingCreateRequest } from '@/remote/request/ProductSharingCreateRequest';
 import FormContainer from '@/shared/components/FormContainer';
 import SubmitBlueButton from '@/shared/components/SubmitBlueButton';
 import { useState } from 'react';
@@ -16,7 +15,7 @@ interface ProductCreateProps {
 
 const ProductCreate = ({ title, type }: ProductCreateProps) => {
   const navigate = useNavigate();
-  
+
   // UI 데이터 및 파일 객체 관리
   const [groupPurchaseData, setGroupPurchaseData] = useState<any>({
     title: '',
@@ -38,17 +37,27 @@ const ProductCreate = ({ title, type }: ProductCreateProps) => {
 
   const handleCreateItem = async () => {
     const currentData = type === 'GROUP_PURCHASE' ? groupPurchaseData : productSharingData;
-    
+
     // Validation
     if (type === 'GROUP_PURCHASE') {
       const { title, content, maxParticipants, totalPrice, imageFile, openChatLink } = currentData;
-      if (!title.trim() || !content.trim() || !imageFile || !openChatLink.trim() || maxParticipants <= 0 || totalPrice <= 0) {
+      if (
+        !title.trim() ||
+        !content.trim() ||
+        !imageFile ||
+        !openChatLink.trim() ||
+        maxParticipants <= 0 ||
+        totalPrice <= 0
+      ) {
         alert('모든 필드를 정확히 입력해주세요. 사진 등록은 필수입니다.');
         return;
       }
     } else {
-      alert('나눔 기능은 준비 중입니다.');
-      return;
+      const { title, content, expirationDate, imageFile } = currentData;
+      if (!title.trim() || !content.trim() || !imageFile || !expirationDate.trim()) {
+        alert('모든 필드를 정확히 입력해주세요. 사진 등록은 필수입니다.');
+        return;
+      }
     }
 
     try {
@@ -69,9 +78,20 @@ const ProductCreate = ({ title, type }: ProductCreateProps) => {
           thumbnailUrl: uploadedImageUrl,
           openChatLink: currentData.openChatLink,
         };
-        
+
         await createProduct(requestData);
         alert('공동구매가 성공적으로 등록되었습니다!');
+        navigate('/');
+      } else if (type === 'PRODUCT_SHARING') {
+        const requestData: ProductSharingCreateRequest = {
+          title: currentData.title,
+          content: currentData.content,
+          imageUrl: uploadedImageUrl,
+          expirationDate: currentData.expirationDate,
+        };
+
+        await createSharing(requestData);
+        alert('나눔이 성공적으로 등록되었습니다!');
         navigate('/');
       }
     } catch (error) {

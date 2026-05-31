@@ -6,10 +6,3 @@ export type GroupPurchaseCreateRequest = {
   maxParticipants: number;
   openChatLink: string;
 };
-
-export type ProductSharingCreateRequest = {
-  title: string;
-  content: string;
-  expirationDate: string;
-  thumbnailUrl: string;
-};

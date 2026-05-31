@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react';
-import { myPosts } from '@/remote/api/UserApi';
 import ItemContainer from '@/shared/components/ItemContainer';
+import { MyPostsMockData } from '@/shared/mock/MyPostsMockData';
 
 interface PostResponse {
   id: string;
-  type: 'GROUP_PURCHASE' | 'PRODUCT_SHARING';
+  model: 'group-purchase' | 'product-sharing';
   title: string;
-  price?: number;
-  peopleClosed?: number;
-  totalPeople?: number;
-  expirationDate?: string;
+  price: number;
+  peopleClosed: number;
+  totalPeople: number;
   createdAt: string;
 }
 
@@ -19,17 +18,19 @@ const MyPostsPage = () => {
 
   useEffect(() => {
     const fetchMyPosts = async () => {
-      try {
-        const data = await myPosts();
-        setPosts(data || []);
-      } catch (error: any) {
-        console.error('Failed to fetch my posts:', error);
-        const errorMessage =
-          error.response?.data?.errorMessage || '게시글 목록을 불러오는데 실패했습니다.';
-        alert(errorMessage);
-      } finally {
-        setLoading(false);
-      }
+      // 목데이터를 사용하여 상태를 업데이트합니다.
+      const mappedData: PostResponse[] = MyPostsMockData.map((item) => ({
+        id: item.postId.toString(),
+        model: 'group-purchase',
+        title: item.title,
+        price: item.price,
+        peopleClosed: item.currentParticipants,
+        totalPeople: item.maxParticipants,
+        createdAt: item.createdAt.split('T')[0], // YYYY-MM-DD 형식으로 변환
+      }));
+      
+      setPosts(mappedData);
+      setLoading(false);
     };
 
     fetchMyPosts();
@@ -65,12 +66,11 @@ const MyPostsPage = () => {
               <ItemContainer
                 key={post.id}
                 id={post.id}
-                model={post.type === 'GROUP_PURCHASE' ? 'group-purchase' : 'product-sharing'}
+                model={post.model}
                 title={post.title}
                 price={post.price}
                 peopleClosed={post.peopleClosed}
                 totalPeople={post.totalPeople}
-                expirationDate={post.expirationDate}
                 createdAt={post.createdAt}
               />
             ))}

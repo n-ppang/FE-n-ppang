@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react';
-import { myPostParticipations } from '@/remote/api/UserApi';
 import ItemContainer from '@/shared/components/ItemContainer';
+import { MyParticipationsMockData } from '@/shared/mock/MyParticipationsMockData';
 
 interface PostResponse {
   id: string;
-  type: 'GROUP_PURCHASE' | 'PRODUCT_SHARING';
+  model: 'group-purchase' | 'product-sharing';
   title: string;
-  price?: number;
-  peopleClosed?: number;
-  totalPeople?: number;
-  expirationDate?: string;
+  price: number;
+  peopleClosed: number;
+  totalPeople: number;
   createdAt: string;
 }
 
@@ -19,16 +18,19 @@ const MyParticipationsPage = () => {
 
   useEffect(() => {
     const fetchMyParticipations = async () => {
-      try {
-        const data = await myPostParticipations();
-        setPosts(data || []);
-      } catch (error: any) {
-        console.error('Failed to fetch my participations:', error);
-        const errorMessage = error.response?.data?.errorMessage || '참여한 게시글 목록을 불러오는데 실패했습니다.';
-        alert(errorMessage);
-      } finally {
-        setLoading(false);
-      }
+      // 목데이터를 사용하여 상태를 업데이트합니다.
+      const mappedData: PostResponse[] = MyParticipationsMockData.map((item) => ({
+        id: item.postId.toString(),
+        model: 'group-purchase',
+        title: item.title,
+        price: (item as any).price || 0,
+        peopleClosed: item.currentParticipants,
+        totalPeople: item.maxParticipants,
+        createdAt: item.createdAt.split('T')[0], // YYYY-MM-DD 형식으로 변환
+      }));
+      
+      setPosts(mappedData);
+      setLoading(false);
     };
 
     fetchMyParticipations();
@@ -64,12 +66,11 @@ const MyParticipationsPage = () => {
               <ItemContainer
                 key={post.id}
                 id={post.id}
-                model={post.type === 'GROUP_PURCHASE' ? 'group-purchase' : 'product-sharing'}
+                model={post.model}
                 title={post.title}
                 price={post.price}
                 peopleClosed={post.peopleClosed}
                 totalPeople={post.totalPeople}
-                expirationDate={post.expirationDate}
                 createdAt={post.createdAt}
               />
             ))}

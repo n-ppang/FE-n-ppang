@@ -33,8 +33,8 @@ const GroupPurchaseView = () => {
       ) : (
         items.map((item) => (
           <ItemContainer
-            key={item.id}
-            id={item.id}
+            key={item.postId}
+            id={item.postId}
             model="group-purchase"
             title={item.title}
             price={item.totalPrice / (item.maxParticipants || 1)} // 인당 금액 계산

@@ -19,14 +19,14 @@ export const verification = async (data: VerificationRequest) => {
   return res.data;
 };
 
-export const imgUpload = async (file: File): Promise<ImgUploadResponse> => {
+export const imgUpload = async (file: File, type: 'VERIFICATION' | 'POST' = 'VERIFICATION'): Promise<ImgUploadResponse> => {
   const formData = new FormData();
   formData.append('file', file);
 
   // 'type' 파라미터를 쿼리 스트링으로 추가하여 요청을 보냅니다.
   const res = await api.post('/images', formData, {
     params: {
-      type: 'VERIFICATION',
+      type: type,
     },
     headers: {
       'Content-Type': 'multipart/form-data',

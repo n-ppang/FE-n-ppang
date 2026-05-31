@@ -1,20 +1,46 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { GroupPurchaseItemsMockData } from '@/shared/mock/ItemsMockData';
-import { GroupPurchaseCommentsMockData } from '@/shared/mock/CommentMockData';
+import { useEffect, useState } from 'react';
+import { getProductDetail } from '@/remote/api/GroupPurchaseApi';
 import CommentSection from '@/shared/components/CommentSection';
 import { useComments } from '@/shared/hooks/useComments';
 
 const GroupPurchaseDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const item = GroupPurchaseItemsMockData.find((i) => i.id === id);
-  const { comments, handleAddComment, handleDeleteComment } = useComments(
-    id ? GroupPurchaseCommentsMockData[id] || [] : []
-  );
+  const [item, setItem] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  const { comments, setComments, handleAddComment, handleDeleteComment } = useComments([]);
+
+  useEffect(() => {
+    const fetchDetail = async () => {
+      if (!id) return;
+      try {
+        const data = await getProductDetail(Number(id));
+        setItem(data);
+        // 댓글 데이터가 있다면 설정
+        if (data.comments) {
+          setComments(data.comments);
+        }
+      } catch (error) {
+        console.error('Failed to fetch group purchase detail:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDetail();
+  }, [id, setComments]);
+
+  if (loading) {
+    return <div className="p-10 text-center text-gray-500">불러오는 중...</div>;
+  }
 
   if (!item) {
     return <div className="p-10 text-center">상품을 찾을 수 없습니다.</div>;
   }
+
+  const pricePerPerson = item.totalPrice / (item.maxParticipants || 1);
 
   return (
     <div className="min-h-screen bg-white pb-24">
@@ -35,10 +61,10 @@ const GroupPurchaseDetail = () => {
       </div>
 
       <div className="mx-auto max-w-md">
-        {/* Image Carousel (Simple) */}
+        {/* Image Section */}
         <div className="aspect-square w-full bg-gray-100">
           <img
-            src={item.imageUrl || `https://placehold.co/600x600/f8fafc/64748b?text=${encodeURIComponent(item.title)}`}
+            src={item.thumbnailUrl || `https://placehold.co/600x600/f8fafc/64748b?text=${encodeURIComponent(item.title)}`}
             alt={item.title}
             className="h-full w-full object-cover"
           />
@@ -48,29 +74,29 @@ const GroupPurchaseDetail = () => {
         <div className="px-6 py-8">
           <div className="mb-6">
             <h1 className="text-2xl font-black tracking-tight text-gray-900">{item.title}</h1>
-            <p className="mt-2 text-sm text-gray-400">{item.createdAt} 등록</p>
+            <p className="mt-2 text-sm text-gray-400">{item.createdAt?.split('T')[0]} 등록</p>
           </div>
 
           <div className="mb-8 space-y-4 rounded-2xl bg-blue-50 p-6">
             <div className="flex items-center justify-between">
               <span className="text-sm font-bold text-blue-600">인당 금액</span>
-              <span className="text-xl font-black text-blue-700">{item.price.toLocaleString()}원</span>
+              <span className="text-xl font-black text-blue-700">{pricePerPerson.toLocaleString()}원</span>
             </div>
             <div className="flex items-center justify-between border-t border-blue-100 pt-4">
               <span className="text-xs text-blue-400">총 금액</span>
-              <span className="text-sm font-bold text-blue-500">{item.totalAmount?.toLocaleString()}원</span>
+              <span className="text-sm font-bold text-blue-500">{item.totalPrice?.toLocaleString()}원</span>
             </div>
           </div>
 
           <div className="mb-8">
             <div className="mb-2 flex items-center justify-between text-sm font-bold">
               <span className="text-gray-900">모집 현황</span>
-              <span className="text-blue-600">{item.peopleClosed} / {item.totalPeople}명</span>
+              <span className="text-blue-600">{item.currentParticipants || 0} / {item.maxParticipants}명</span>
             </div>
             <div className="h-3 w-full overflow-hidden rounded-full bg-gray-100">
               <div 
                 className="h-full bg-blue-600 transition-all duration-1000" 
-                style={{ width: `${(item.peopleClosed / item.totalPeople) * 100}%` }}
+                style={{ width: `${((item.currentParticipants || 0) / item.maxParticipants) * 100}%` }}
               />
             </div>
           </div>

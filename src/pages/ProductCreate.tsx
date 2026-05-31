@@ -1,4 +1,5 @@
 import { createProduct } from '@/remote/api/GroupPurchaseApi';
+import { imgUpload } from '@/remote/api/AuthApi';
 import type {
   GroupPurchaseCreateRequest,
   ProductSharingCreateRequest,
@@ -15,52 +16,64 @@ interface ProductCreateProps {
 
 const ProductCreate = ({ title, type }: ProductCreateProps) => {
   const navigate = useNavigate();
-  // UI 데이터
-  const [groupPurchaseData, setGroupPurchaseData] = useState<GroupPurchaseCreateRequest>({
+  
+  // UI 데이터 및 파일 객체 관리
+  const [groupPurchaseData, setGroupPurchaseData] = useState<any>({
     title: '',
     content: '',
     maxParticipants: 0,
     totalPrice: 0,
     thumbnailUrl: '',
     openChatLink: '',
+    imageFile: null,
   });
 
-  const [productSharingData, setProductSharingData] = useState<ProductSharingCreateRequest>({
+  const [productSharingData, setProductSharingData] = useState<any>({
     title: '',
     content: '',
     expirationDate: '',
     thumbnailUrl: '',
+    imageFile: null,
   });
 
   const handleCreateItem = async () => {
+    const currentData = type === 'GROUP_PURCHASE' ? groupPurchaseData : productSharingData;
+    
     // Validation
     if (type === 'GROUP_PURCHASE') {
-      const { title, content, maxParticipants, totalPrice, thumbnailUrl, openChatLink } =
-        groupPurchaseData;
-      if (
-        !title.trim() ||
-        !content.trim() ||
-        !thumbnailUrl ||
-        !openChatLink.trim() ||
-        maxParticipants <= 0 ||
-        totalPrice <= 0
-      ) {
-        alert('모든 필드를 정확히 입력해주세요.');
+      const { title, content, maxParticipants, totalPrice, imageFile, openChatLink } = currentData;
+      if (!title.trim() || !content.trim() || !imageFile || !openChatLink.trim() || maxParticipants <= 0 || totalPrice <= 0) {
+        alert('모든 필드를 정확히 입력해주세요. 사진 등록은 필수입니다.');
         return;
       }
     } else {
-      const { title, content, expirationDate, thumbnailUrl } = productSharingData;
-      if (!title.trim() || !content.trim() || !expirationDate || !thumbnailUrl) {
-        alert('모든 필드를 정확히 입력해주세요.');
-        return;
-      }
+      alert('나눔 기능은 준비 중입니다.');
+      return;
     }
 
     try {
-      const data = type === 'GROUP_PURCHASE' ? groupPurchaseData : productSharingData;
-      await createProduct(data);
-      alert('성공적으로 등록되었습니다!');
-      navigate('/');
+      // 1. 이미지 업로드 우선 수행
+      let uploadedImageUrl = '';
+      if (currentData.imageFile) {
+        const uploadRes = await imgUpload(currentData.imageFile, 'POST');
+        uploadedImageUrl = uploadRes.imageUrl;
+      }
+
+      // 2. 업로드된 URL을 포함하여 상품 생성 요청
+      if (type === 'GROUP_PURCHASE') {
+        const requestData: GroupPurchaseCreateRequest = {
+          title: currentData.title,
+          content: currentData.content,
+          maxParticipants: Number(currentData.maxParticipants),
+          totalPrice: Number(currentData.totalPrice),
+          thumbnailUrl: uploadedImageUrl,
+          openChatLink: currentData.openChatLink,
+        };
+        
+        await createProduct(requestData);
+        alert('공동구매가 성공적으로 등록되었습니다!');
+        navigate('/');
+      }
     } catch (error) {
       console.error('Failed to create product:', error);
       alert('등록에 실패했습니다.');
@@ -85,8 +98,8 @@ const ProductCreate = ({ title, type }: ProductCreateProps) => {
             formData={type === 'GROUP_PURCHASE' ? groupPurchaseData : productSharingData}
             setFormData={
               type === 'GROUP_PURCHASE'
-                ? (data) => setGroupPurchaseData(data as GroupPurchaseCreateRequest)
-                : (data) => setProductSharingData(data as ProductSharingCreateRequest)
+                ? (data) => setGroupPurchaseData(data)
+                : (data) => setProductSharingData(data)
             }
           />
 

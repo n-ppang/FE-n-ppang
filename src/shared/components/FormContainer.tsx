@@ -8,7 +8,7 @@ type Props = {
 
 const FormContainer = ({ type, formData, setFormData }: Props) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [imagePreview, setImagePreview] = useState<string>(formData.thumbnailUrl || '');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -26,19 +26,19 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
     const files = e.target.files;
     if (files && files[0]) {
       const file = files[0];
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        setFormData({ ...formData, thumbnailUrl: result });
-        setImagePreviews([result]);
-      };
-      reader.readAsDataURL(file);
+      
+      // Preview
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+      
+      // Store File object in formData for later upload
+      setFormData({ ...formData, imageFile: file, thumbnailUrl: previewUrl });
     }
   };
 
   const removeImage = () => {
-    setFormData({ ...formData, thumbnailUrl: '' });
-    setImagePreviews([]);
+    setFormData({ ...formData, imageFile: undefined, thumbnailUrl: '' });
+    setImagePreview('');
   };
 
   const inputClasses =
@@ -79,7 +79,6 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
             className={inputClasses}
           />
         </div>
-        {/* Note: This section might still need file upload if used, but focusing on type-based forms first */}
       </div>
     );
   }
@@ -166,11 +165,11 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
       <div>
         <label className={labelClasses}>사진 등록</label>
         <div className="grid grid-cols-3 gap-3">
-          {formData.thumbnailUrl && (
+          {imagePreview && (
             <div
               className="group relative aspect-square overflow-hidden rounded-xl bg-gray-100 ring-1 ring-gray-200"
             >
-              <img src={formData.thumbnailUrl} alt="Upload" className="h-full w-full object-cover" />
+              <img src={imagePreview} alt="Upload" className="h-full w-full object-cover" />
               <button
                 type="button"
                 onClick={removeImage}
@@ -187,7 +186,7 @@ const FormContainer = ({ type, formData, setFormData }: Props) => {
               </button>
             </div>
           )}
-          {!formData.thumbnailUrl && (
+          {!imagePreview && (
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}

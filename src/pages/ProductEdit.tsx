@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { GroupPurchaseItemsMockData, SharingItemsMockData } from '@/shared/mock/ItemsMockData';
+import { getProductDetail, updateProduct } from '@/remote/api/GroupPurchaseApi';
 import FormContainer from '@/shared/components/FormContainer';
 import SubmitBlueButton from '@/shared/components/SubmitBlueButton';
 import { useState, useEffect } from 'react';
@@ -13,31 +13,46 @@ const ProductEdit = ({ type }: ProductEditProps) => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const data = type === 'GROUP_PURCHASE' 
-      ? GroupPurchaseItemsMockData.find(i => i.id === id)
-      : SharingItemsMockData.find(i => i.id === id);
+    const fetchDetail = async () => {
+      if (!id) return;
+      try {
+        const data = await getProductDetail(Number(id));
+        setFormData(data);
+      } catch (error) {
+        console.error('Failed to fetch product for edit:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    if (data) {
-      setFormData(data);
-    }
-  }, [id, type]);
+    fetchDetail();
+  }, [id]);
 
   const handleUpdateItem = async () => {
+    if (!id) return;
     try {
-      // In a real app, we would call an update API here
-      // await updateProduct(id, formData);
-      alert('아직 수정 기능이 준비되지 않았습니다.');
-      navigate(-1);
+      if (type === 'GROUP_PURCHASE') {
+        await updateProduct(Number(id), formData);
+        alert('공동구매 정보가 수정되었습니다.');
+        navigate(-1);
+      } else {
+        alert('나눔 수정 기능은 준비 중입니다.');
+      }
     } catch (error) {
       console.error('Failed to update product:', error);
       alert('수정에 실패했습니다.');
     }
   };
 
-  if (!formData) {
+  if (loading) {
     return <div className="p-10 text-center text-gray-500">데이터를 불러오는 중...</div>;
+  }
+
+  if (!formData) {
+    return <div className="p-10 text-center text-gray-500">데이터를 찾을 수 없습니다.</div>;
   }
 
   return (

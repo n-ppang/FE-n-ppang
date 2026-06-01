@@ -3,9 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import SubmitBlueButton from '@/shared/components/SubmitBlueButton';
 import { login } from '@/remote/api/AuthApi';
 import type { LoginRequest } from '@/remote/request/auth/LoginRequest';
+import { useAuthStore } from '@/shared/hooks/useAuthStore';
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { setLoggedIn, fetchMe } = useAuthStore();
   const [formData, setFormData] = useState<LoginRequest>({
     studentId: '',
     password: '',
@@ -19,7 +21,6 @@ const LoginPage = () => {
   const handleLogin = async (e: React.FormEvent) => {
     if (e) e.preventDefault();
 
-    // Simple mandatory check
     if (!formData.studentId.trim() || !formData.password.trim()) {
       alert('학번과 비밀번호를 모두 입력해주세요.');
       return;
@@ -27,12 +28,12 @@ const LoginPage = () => {
 
     try {
       const response = await login(formData);
-      
-      // 서버 응답 구조에 따라 accessToken을 추출하여 저장합니다.
       const token = response.accessToken || response.token;
       
       if (token) {
         localStorage.setItem('accessToken', token);
+        setLoggedIn(true);
+        await fetchMe(); // 로그인 직후 내 정보(role 포함) 가져오기
         alert('로그인에 성공했습니다!');
         navigate('/');
       } else {

@@ -1,23 +1,64 @@
-import { useState } from 'react';
-import { USER_APPROVAL_MOCK_DATA, type UserApprovalRequest } from '@/shared/mock/UserApprovalMockData';
+import { useEffect, useState } from 'react';
+import { getUserList, approveUser } from '@/remote/api/AdminApi';
+import { VerificationRequestResponse } from '@/remote/response/VerificationResponse';
 
 const UserApprovalPage = () => {
-  const [requests, setRequests] = useState<UserApprovalRequest[]>(USER_APPROVAL_MOCK_DATA);
+  const [requests, setRequests] = useState<VerificationRequestResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchRequests = async () => {
+    try {
+      setLoading(true);
+      const data = await getUserList();
+      // 'PENDING' 상태인 요청만 필터링하고 UI용 선택 상태(isApproved) 추가
+      const pendingRequests = data.content
+        .filter((item) => item.status === 'PENDING')
+        .map((item) => ({
+          ...item,
+          isApproved: false,
+        }));
+      setRequests(pendingRequests);
+    } catch (error) {
+      console.error('Failed to fetch verification requests:', error);
+      alert('목록을 불러오는데 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRequests();
+  }, []);
 
   const handleCheckboxChange = (id: number) => {
     setRequests((prev) =>
-      prev.map((req) => (req.id === id ? { ...req, isApproved: !req.isApproved } : req)),
+      prev.map((req) =>
+        req.verificationId === id ? { ...req, isApproved: !req.isApproved } : req,
+      ),
     );
   };
 
-  const handleApproveAll = () => {
-    const approvedCount = requests.filter((r) => r.isApproved).length;
-    if (approvedCount === 0) {
+  const handleApproveAll = async () => {
+    const selectedUsers = requests.filter((r) => r.isApproved);
+    if (selectedUsers.length === 0) {
       alert('승인할 사용자를 선택해주세요.');
       return;
     }
-    alert(`${approvedCount}명의 사용자가 승인되었습니다.`);
+
+    try {
+      // API 엔드포인트에 따라 verificationId 또는 userId 사용
+      await Promise.all(selectedUsers.map((req) => approveUser(req.verificationId)));
+      alert(`${selectedUsers.length}명의 사용자가 승인되었습니다.`);
+      fetchRequests();
+    } catch (error) {
+      console.error('Failed to approve users:', error);
+      alert('일부 사용자의 승인에 실패했습니다.');
+    }
   };
+
+  if (loading) {
+    return <div className="flex min-h-screen items-center justify-center">로딩 중...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 pb-12">
@@ -41,17 +82,17 @@ const UserApprovalPage = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {requests.map((user, index) => (
-                <tr key={user.id} className="transition-colors hover:bg-gray-50/50">
+              {requests.map((req, index) => (
+                <tr key={req.verificationId} className="transition-colors hover:bg-gray-50/50">
                   <td className="px-4 py-4 font-medium text-gray-500">{index + 1}</td>
-                  <td className="px-4 py-4 font-bold text-gray-900">{user.name}</td>
-                  <td className="px-4 py-4 text-gray-600">{user.nickname}</td>
-                  <td className="px-4 py-4 text-gray-600">{user.dormitory}</td>
-                  <td className="px-4 py-4 text-gray-600">{user.roomNumber}</td>
+                  <td className="px-4 py-4 font-bold text-gray-900">{req.user.name}</td>
+                  <td className="px-4 py-4 text-gray-600">{req.user.nickname}</td>
+                  <td className="px-4 py-4 text-gray-600">{req.user.dormitory}</td>
+                  <td className="px-4 py-4 text-gray-600">{req.user.roomNumber}</td>
                   <td className="px-4 py-4">
                     <div className="h-10 w-10 overflow-hidden rounded-lg border border-gray-100 bg-gray-100">
                       <img
-                        src={user.verificationImageUrl}
+                        src={req.imageUrl}
                         alt="Verification"
                         className="h-full w-full object-cover"
                       />
@@ -60,8 +101,8 @@ const UserApprovalPage = () => {
                   <td className="px-4 py-4 text-center">
                     <input
                       type="checkbox"
-                      checked={user.isApproved}
-                      onChange={() => handleCheckboxChange(user.id)}
+                      checked={req.isApproved}
+                      onChange={() => handleCheckboxChange(req.verificationId)}
                       className="h-5 w-5 cursor-pointer rounded-lg border-gray-200 text-blue-600 focus:ring-blue-500"
                     />
                   </td>

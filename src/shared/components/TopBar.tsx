@@ -14,14 +14,16 @@ const TopBar = () => {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-md items-center justify-between px-6">
-        <Link
-          to={role === 'ADMIN' ? '/admin/approvals' : '/'}
+        <Link 
+          to={role === 'ADMIN' ? "/admin/approvals" : "/"} 
           className="flex items-center gap-2 transition-transform active:scale-95"
         >
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white shadow-lg shadow-blue-200">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white shadow-blue-200 shadow-lg">
             <span className="text-lg font-black">N</span>
           </div>
-          <span className="text-xl font-black tracking-tighter text-gray-900">nppang</span>
+          <span className="text-xl font-black tracking-tighter text-gray-900">
+            nppang
+          </span>
         </Link>
 
         <nav className="flex items-center gap-3">
@@ -35,24 +37,12 @@ const TopBar = () => {
                 승인 관리
               </Link>
               <Link
-                to="/login"
-                className="text-xs font-bold text-gray-500 transition-colors hover:text-blue-600"
-              >
-                로그인
-              </Link>
-
-              <Link
                 to="/mypage"
                 className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-50 text-gray-500 transition-all hover:bg-gray-100 hover:text-blue-600 active:scale-90"
                 aria-label="마이페이지"
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </Link>
               <button
@@ -87,12 +77,7 @@ const TopBar = () => {
                 aria-label="마이페이지"
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </Link>
               <button

@@ -13,7 +13,3 @@ export type CommentResponse = {
   };
   createdAt: string;
 };
-
-export type GetCommentsListResponse = {
-  comments: CommentResponse[];
-};

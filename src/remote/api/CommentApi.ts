@@ -1,10 +1,10 @@
 import { api } from '../axiosInstance';
 import type { CommentCreateRequest } from '../request/CommentCreateRequest';
-import type { GetCommentsListResponse } from '../response/GetCommentsResponse';
+import type { CommentResponse } from '../response/GetCommentsResponse';
 
 export const getComments = async (postId: number) => {
   const res = await api.get(`/posts/${postId}/comments`);
-  return res.data as GetCommentsListResponse;
+  return res.data as CommentResponse[];
 };
 
 export const createComment = async (postId: number, data: CommentCreateRequest) => {

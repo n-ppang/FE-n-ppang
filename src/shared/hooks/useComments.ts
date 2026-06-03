@@ -1,31 +1,49 @@
-import { useState } from 'react';
-import type { Comment } from '@/shared/mock/CommentMockData';
+import { useState, useCallback } from 'react';
+import type { CommentResponse } from '@/remote/response/GetCommentsResponse';
+import { createComment, deleteComment, getComments } from '@/remote/api/CommentApi';
 
-export const useComments = (initialComments: Comment[]) => {
-  const [comments, setComments] = useState<Comment[]>(initialComments);
+export const useComments = (postId: number, initialComments: CommentResponse[]) => {
+  const [comments, setComments] = useState<CommentResponse[]>(initialComments);
 
-  const handleAddComment = (content: string, mention?: string) => {
-    const now = new Date();
-    const kstDate = new Date(now.getTime() + 9 * 60 * 60 * 1000);
-    const newComment: Comment = {
-      id: Date.now().toString(),
-      author: '나 (User)',
-      content,
-      mention,
-      createdAt: kstDate.toISOString().replace('T', ' ').substring(0, 16),
-    };
-    setComments([...comments, newComment]);
+  const refreshComments = useCallback(async () => {
+    try {
+      const data = await getComments(postId);
+      setComments(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Failed to fetch comments:', error);
+    }
+  }, [postId]);
+
+  const handleAddComment = async (content: string, taggedUserId?: number) => {
+    try {
+      await createComment(postId, {
+        content,
+        taggedUserId: taggedUserId ?? 0, // Using 0 if no tag, as per typical API patterns or handle appropriately
+      });
+      await refreshComments();
+    } catch (error) {
+      console.error('Failed to add comment:', error);
+      alert('댓글 등록에 실패했습니다.');
+    }
   };
 
-  const handleDeleteComment = (commentId: string) => {
-    if (window.confirm('댓글을 삭제하시겠습니까?')) {
-      setComments(comments.filter((c) => c.id !== commentId));
+  const handleDeleteComment = async (commentId: number) => {
+    if (!window.confirm('댓글을 삭제하시겠습니까?')) return;
+    
+    try {
+      await deleteComment(postId, commentId);
+      await refreshComments();
+    } catch (error) {
+      console.error('Failed to delete comment:', error);
+      alert('댓글 삭제에 실패했습니다.');
     }
   };
 
   return {
     comments,
+    setComments,
     handleAddComment,
     handleDeleteComment,
+    refreshComments,
   };
 };

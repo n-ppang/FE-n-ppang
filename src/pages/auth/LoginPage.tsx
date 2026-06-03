@@ -25,22 +25,27 @@ const LoginPage = () => {
       alert('학번과 비밀번호를 모두 입력해주세요.');
       return;
     }
+try {
+  const response = await login(formData);
+  const token = response.accessToken || response.token;
 
-    try {
-      const response = await login(formData);
-      const token = response.accessToken || response.token;
-      
-      if (token) {
-        localStorage.setItem('accessToken', token);
-        setLoggedIn(true);
-        await fetchMe(); // 로그인 직후 내 정보(role 포함) 가져오기
-        alert('로그인에 성공했습니다!');
-        navigate('/');
-      } else {
-        throw new Error('토큰을 찾을 수 없습니다.');
-      }
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.errorMessage || error.message || '알 수 없는 오류가 발생했습니다.';
+  if (token) {
+    localStorage.setItem('accessToken', token);
+    setLoggedIn(true);
+    const userRole = await fetchMe(); // 로그인 직후 내 정보(role) 가져오기
+    alert('로그인에 성공했습니다!');
+
+    if (userRole === 'ADMIN') {
+      navigate('/admin/approvals');
+    } else {
+      navigate('/');
+    }
+  } else {
+    throw new Error('토큰을 찾을 수 없습니다.');
+  }
+} catch (error: any) {
+      const errorMessage =
+        error.response?.data?.errorMessage || error.message || '알 수 없는 오류가 발생했습니다.';
       alert(`로그인에 실패했습니다.\n${errorMessage}`);
     }
   };

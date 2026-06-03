@@ -1,5 +1,5 @@
 import { api } from '../axiosInstance';
-import { VerificationListResponse } from '../response/VerificationResponse';
+import type { VerificationListResponse } from '../response/VerificationResponse';
 
 // 기숙사 인증 요청 목록 조회
 export const getUserList = async (page = 0, size = 10): Promise<VerificationListResponse> => {

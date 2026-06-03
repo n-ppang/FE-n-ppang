@@ -4,9 +4,11 @@ import ProductSharingView from '@/shared/components/ProductSharingView';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const FirstPage = () => {
+const HomePage = () => {
   const nav = useNavigate();
-  const [activeTab, setActiveTab] = useState<'group-purchase' | 'product-sharing'>('group-purchase');
+  const [activeTab, setActiveTab] = useState<'group-purchase' | 'product-sharing'>(
+    'group-purchase',
+  );
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24 font-sans text-gray-900">
@@ -51,12 +53,12 @@ const FirstPage = () => {
             )}
           </h2>
           <p className="mt-1 text-sm text-gray-500">
-            {activeTab === 'group-purchase' 
-              ? '기숙사 친구들과 함께 구매하고 배송비를 아껴보세요.' 
+            {activeTab === 'group-purchase'
+              ? '기숙사 친구들과 함께 구매하고 배송비를 아껴보세요.'
               : '남은 식재료나 생필품을 이웃과 나눠보세요.'}
           </p>
         </div>
-        
+
         <div className="space-y-4">
           {activeTab === 'group-purchase' ? <GroupPurchaseView /> : <ProductSharingView />}
         </div>
@@ -64,13 +66,15 @@ const FirstPage = () => {
 
       {/* Floating Action Button Container */}
       <div className="fixed right-6 bottom-8 z-20">
-        <CRUDButton 
-          onClick={() => nav(activeTab === 'group-purchase' ? 'group-purchases/new' : 'sharing-products/new')} 
-          text="새 글 등록" 
+        <CRUDButton
+          onClick={() =>
+            nav(activeTab === 'group-purchase' ? 'group-purchases/new' : 'sharing-products/new')
+          }
+          text="새 글 등록"
         />
       </div>
     </div>
   );
 };
 
-export default FirstPage;
+export default HomePage;

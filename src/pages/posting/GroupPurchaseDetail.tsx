@@ -34,7 +34,7 @@ const GroupPurchaseDetail = () => {
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
-  const { comments, setComments, handleAddComment, handleDeleteComment } = useComments([]);
+  const { comments, setComments, handleAddComment, handleDeleteComment, refreshComments } = useComments(Number(id), []);
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -46,12 +46,10 @@ const GroupPurchaseDetail = () => {
         const [data, userData] = await Promise.all([
           getProductDetail(Number(id)),
           mypage().catch(() => null),
+          refreshComments(),
         ]);
 
         setItem(data);
-        if (data.comments) {
-          setComments(data.comments);
-        }
         if (userData) {
           setCurrentUserId(userData.userId);
         }
@@ -64,7 +62,7 @@ const GroupPurchaseDetail = () => {
     };
 
     fetchDetail();
-  }, [id, setComments]);
+  }, [id, refreshComments]);
 
   const handleDelete = async () => {
     if (!id || !window.confirm('정말 삭제하시겠습니까?')) return;
@@ -268,6 +266,7 @@ const GroupPurchaseDetail = () => {
         <div className="border-t border-gray-50 pt-4">
           <CommentSection
             comments={comments}
+            currentUserId={currentUserId}
             onAddComment={handleAddComment}
             onDeleteComment={handleDeleteComment}
           />

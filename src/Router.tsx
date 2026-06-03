@@ -1,18 +1,18 @@
 import { Routes, Route } from 'react-router-dom';
-import FirstPage from './pages/FirstPage';
-import ProductSharingCreate from './pages/ProductSharingCreate';
-import GroupPurchaseCreate from './pages/GroupPurchaseCreate';
-import GroupPurchaseDetail from './pages/GroupPurchaseDetail';
-import ProductSharingDetail from './pages/ProductSharingDetail';
-import ProductEdit from './pages/ProductEdit';
-import SignupPage from './pages/SignupPage';
-import LoginPage from './pages/LoginPage';
-import NotificationsPage from './pages/NotificationsPage';
-import MyPage from './pages/MyPage';
-import MyPostsPage from './pages/MyPostsPage';
-import MyParticipationsPage from './pages/MyParticipationsPage';
-import UserApprovalPage from './pages/UserApprovalPage';
-import DormitoryVerificationPage from './pages/DormitoryVerificationPage';
+import ProductSharingCreate from './pages/posting/ProductSharingCreate';
+import GroupPurchaseDetail from './pages/posting/GroupPurchaseDetail';
+import ProductSharingDetail from './pages/posting/ProductSharingDetail';
+import ProductEdit from './pages/posting/ProductEdit';
+import SignupPage from './pages/auth/SignupPage';
+import LoginPage from './pages/auth/LoginPage';
+import NotificationsPage from './pages/alarm/NotificationsPage';
+import MyPostsPage from './pages/mypage/MyPostsPage';
+import MyParticipationsPage from './pages/mypage/MyParticipationsPage';
+import UserApprovalPage from './pages/manager/UserApprovalPage';
+import DormitoryVerificationPage from './pages/auth/DormitoryVerificationPage';
+import MyPage from './pages/mypage/MyPage';
+import HomePage from './pages/HomePage';
+import GroupPurchaseCreate from './pages/posting/GroupPurchaseCreate';
 
 const Router = () => {
   return (
@@ -28,7 +28,7 @@ const Router = () => {
       <Route path="/signup/verification" element={<DormitoryVerificationPage />} />
 
       {/* Home */}
-      <Route path="/" element={<FirstPage />} />
+      <Route path="/" element={<HomePage />} />
 
       {/* Posts */}
       <Route path="/sharing-products/new" element={<ProductSharingCreate />} />

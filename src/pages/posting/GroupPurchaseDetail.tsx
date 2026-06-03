@@ -34,7 +34,10 @@ const GroupPurchaseDetail = () => {
   const [loading, setLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
 
-  const { comments, setComments, handleAddComment, handleDeleteComment, refreshComments } = useComments(Number(id), []);
+  const { comments, handleAddComment, handleDeleteComment, refreshComments } = useComments(
+    Number(id),
+    [],
+  );
 
   useEffect(() => {
     const fetchDetail = async () => {

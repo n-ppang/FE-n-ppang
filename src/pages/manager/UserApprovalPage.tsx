@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getUserList, approveUser } from '@/remote/api/AdminApi';
-import { VerificationRequestResponse } from '@/remote/response/VerificationResponse';
+import type { VerificationRequestResponse } from '@/remote/response/VerificationResponse';
 
 const UserApprovalPage = () => {
   const [requests, setRequests] = useState<VerificationRequestResponse[]>([]);

@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getProductDetail, deleteProduct } from '@/remote/api/GroupPurchaseApi';
+import { getProductDetail, deleteProduct, closeProduct } from '@/remote/api/GroupPurchaseApi';
 import { createParticipation, cancelParticipation } from '@/remote/api/ParticipationApi';
 import { mypage } from '@/remote/api/UserApi';
 import CommentSection from '@/shared/components/CommentSection';
@@ -110,6 +110,21 @@ const GroupPurchaseDetail = () => {
     } catch (error) {
       console.error('Failed to cancel participation:', error);
       alert('참여 취소에 실패했습니다.');
+    }
+  };
+
+  const handleCloseProduct = async () => {
+    if (!id || !item || !window.confirm('공동구매를 마감하시겠습니까?')) return;
+
+    try {
+      await closeProduct(Number(id));
+      alert('마감되었습니다.');
+
+      const updatedData = await getProductDetail(Number(id));
+      setItem(updatedData);
+    } catch (error) {
+      console.error('Failed to close product:', error);
+      alert('마감에 실패했습니다.');
     }
   };
 
@@ -259,10 +274,17 @@ const GroupPurchaseDetail = () => {
         </div>
       </div>
 
-      {!isAuthor && (
       <div className="fixed right-0 bottom-0 left-0 border-t border-gray-100 bg-white/90 p-4 backdrop-blur-lg">
         <div className="mx-auto max-w-md">
-          {isParticipate ? (
+          {isAuthor ? (
+            <button
+              onClick={handleCloseProduct}
+              disabled={item.status === 'CLOSED'}
+              className="w-full rounded-2xl bg-red-500 py-4 text-center text-lg font-black text-white shadow-lg shadow-red-200 transition-all hover:bg-red-600 active:scale-95 disabled:bg-gray-300 disabled:shadow-none"
+            >
+              {item.status === 'CLOSED' ? '마감된 게시글' : '마감하기'}
+            </button>
+          ) : isParticipate ? (
             <button
               onClick={handleCancelParticipation}
               className="w-full rounded-2xl bg-gray-100 py-4 text-center text-lg font-black text-gray-600 shadow-lg shadow-gray-100 transition-all hover:bg-gray-200 active:scale-95"
@@ -272,14 +294,14 @@ const GroupPurchaseDetail = () => {
           ) : (
             <button
               onClick={handleParticipate}
+              disabled={item.status === 'CLOSED'}
               className="w-full rounded-2xl bg-blue-600 py-4 text-center text-lg font-black text-white shadow-lg shadow-blue-200 transition-all hover:bg-blue-700 active:scale-95 disabled:bg-gray-300 disabled:shadow-none"
             >
-              참여하기
+              {item.status === 'CLOSED' ? '마감됨' : '참여하기'}
             </button>
           )}
         </div>
       </div>
-      )}
     </div>
   );
 };

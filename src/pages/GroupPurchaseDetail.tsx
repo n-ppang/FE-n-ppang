@@ -259,6 +259,7 @@ const GroupPurchaseDetail = () => {
         </div>
       </div>
 
+      {!isAuthor && (
       <div className="fixed right-0 bottom-0 left-0 border-t border-gray-100 bg-white/90 p-4 backdrop-blur-lg">
         <div className="mx-auto max-w-md">
           {isParticipate ? (
@@ -278,6 +279,7 @@ const GroupPurchaseDetail = () => {
           )}
         </div>
       </div>
+      )}
     </div>
   );
 };

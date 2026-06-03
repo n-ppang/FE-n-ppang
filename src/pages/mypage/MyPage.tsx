@@ -1,5 +1,5 @@
+import { mypage } from '@/remote/api/UserApi';
 import { useEffect, useState } from 'react';
-import { mypage } from '../remote/api/UserApi';
 import { useNavigate } from 'react-router-dom';
 
 interface UserData {

@@ -23,7 +23,7 @@ interface GroupPurchaseDetailData {
   };
   openChatLink?: string;
   createdAt: string;
-  isParticipant?: boolean;
+  isParticipate?: boolean;
   comments?: any[];
 }
 
@@ -138,7 +138,7 @@ const GroupPurchaseDetail = () => {
   }
 
   const isAuthor = currentUserId === item.author.userId;
-  const isParticipant = item.isParticipant;
+  const isParticipate = item.isParticipate;
 
   return (
     <div className="min-h-screen bg-white pb-24">
@@ -261,7 +261,7 @@ const GroupPurchaseDetail = () => {
 
       <div className="fixed right-0 bottom-0 left-0 border-t border-gray-100 bg-white/90 p-4 backdrop-blur-lg">
         <div className="mx-auto max-w-md">
-          {isParticipant ? (
+          {isParticipate ? (
             <button
               onClick={handleCancelParticipation}
               className="w-full rounded-2xl bg-gray-100 py-4 text-center text-lg font-black text-gray-600 shadow-lg shadow-gray-100 transition-all hover:bg-gray-200 active:scale-95"

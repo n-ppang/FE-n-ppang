@@ -6,7 +6,7 @@ interface UserState {
   role: 'ADMIN' | 'USER' | null;
   isLoggedIn: boolean;
   setLoggedIn: (isLoggedIn: boolean) => void;
-  fetchMe: () => Promise<void>;
+  fetchMe: () => Promise<'ADMIN' | 'USER' | null>;
   logout: () => void;
 }
 
@@ -23,11 +23,13 @@ export const useAuthStore = create<UserState>()(
           // ROLE_ADMIN -> ADMIN, ROLE_USER -> USER 로 매핑
           const mappedRole = role === 'ROLE_ADMIN' ? 'ADMIN' : 'USER';
           set({ role: mappedRole, isLoggedIn: true });
+          return mappedRole;
         } catch (error) {
           console.error('Failed to fetch user info:', error);
           // 에러 발생 시 로그아웃 처리하거나 상태 유지 (상황에 따라 조절)
           set({ role: null, isLoggedIn: false });
           localStorage.removeItem('accessToken');
+          return null;
         }
       },
       logout: () => {

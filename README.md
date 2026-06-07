@@ -25,7 +25,7 @@ https://fe-n-ppang.vercel.app/
 https://www.youtube.com/watch?v=cvivCA4ISPI
 
 ### 테스트 계정 
-테스트를 해보시려면 다음 계정을 사용하세요. 
+테스트를 해보시려면 로그인 시 다음 계정을 사용하세요. 
 1. 사용자 계정
    `학번: C111111`, `비밀번호: 홍익이`
 2. 어드민 계정

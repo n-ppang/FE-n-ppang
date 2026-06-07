@@ -18,5 +18,8 @@
 
 - **네트워크 (API 통신):** axios 
 
+## 배포 사이트 
+https://fe-n-ppang.vercel.app/
+
 ## 서비스 영상 
 https://www.youtube.com/watch?v=cvivCA4ISPI

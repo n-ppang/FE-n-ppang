@@ -17,3 +17,6 @@
 - **상태 관리:** Zustand
 
 - **네트워크 (API 통신):** axios 
+
+## 서비스 영상 
+https://www.youtube.com/watch?v=cvivCA4ISPI
